@@ -23,10 +23,6 @@ public class ActionRuleDto {
 
   private OffsetDateTime triggerDateTime;
 
-  private String phoneNumberColumn;
-
-  private String emailColumn;
-
   private Object uacMetadata;
 
   private boolean hasTriggered;

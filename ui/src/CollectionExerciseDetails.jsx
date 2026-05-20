@@ -21,9 +21,7 @@ import TableRow from "@material-ui/core/TableRow";
 import SampleUpload from "./SampleUpload";
 import {
   errorAlert,
-  getActionRuleEmailPackCodesForSurvey,
   getActionRuleExportFilePackCodesForSurvey,
-  getActionRuleSmsPackCodesForSurvey,
   getLocalDateTime,
 } from "./Utils";
 import { Link } from "react-router-dom";
@@ -37,23 +35,13 @@ class CollectionExerciseDetails extends Component {
     authorisedActivities: [],
     actionRules: [],
     exportFilePackCodes: [],
-    smsPackCodes: [],
-    emailPackCodes: [],
     createActionRulesDialogDisplayed: false,
     rescheduleActionRulesDialogDisplayed: false,
     exportFilePackCodeValidationError: false,
-    smsPackCodeValidationError: false,
-    smsPhoneNumberColumnValidationError: false,
-    emailPackCodeValidationError: false,
-    emailColumnValidationError: false,
     actionRuleTypeValidationError: false,
     uacQidMetadataValidationError: false,
     collectionExerciseDetails: {},
     newActionRuleExportFilePackCode: "",
-    newActionRuleSmsPackCode: "",
-    newActionRuleSmsPhoneNumberColumn: "",
-    newActionRuleEmailPackCode: "",
-    newActionRuleEmailColumn: "",
     newActionRuleDescription: "",
     newActionRuleClassifiers: "",
     newActionRuleType: "",
@@ -76,8 +64,6 @@ class CollectionExerciseDetails extends Component {
     this.getCollectionExerciseDetails(authorisedActivities);
     this.getActionRules(authorisedActivities);
     this.getExportFileTemplates(authorisedActivities);
-    this.getSmsTemplates(authorisedActivities);
-    this.getEmailTemplates(authorisedActivities);
   };
 
   getAuthorisedActivities = async () => {
@@ -152,36 +138,6 @@ class CollectionExerciseDetails extends Component {
     this.setState({ exportFilePackCodes: packCodes });
   };
 
-  getSmsTemplates = async (authorisedActivities) => {
-    if (
-      !authorisedActivities.includes(
-        "LIST_ALLOWED_SMS_TEMPLATES_ON_ACTION_RULES",
-      )
-    )
-      return;
-
-    const packCodes = await getActionRuleSmsPackCodesForSurvey(
-      authorisedActivities,
-      this.props.surveyId,
-    );
-    this.setState({ smsPackCodes: packCodes });
-  };
-
-  getEmailTemplates = async (authorisedActivities) => {
-    if (
-      !authorisedActivities.includes(
-        "LIST_ALLOWED_EMAIL_TEMPLATES_ON_ACTION_RULES",
-      )
-    )
-      return;
-
-    const packCodes = await getActionRuleEmailPackCodesForSurvey(
-      authorisedActivities,
-      this.props.surveyId,
-    );
-    this.setState({ emailPackCodes: packCodes });
-  };
-
   openCreateActionDialog = () => {
     this.createActionRuleDisabled = false;
 
@@ -189,13 +145,7 @@ class CollectionExerciseDetails extends Component {
       newActionRuleType: "",
       actionRuleTypeValidationError: false,
       newActionRuleExportFilePackCode: "",
-      newActionRuleSmsPackCode: "",
-      newActionRuleSmsPhoneNumberColumn: "",
-      newActionRuleEmailPackCode: "",
-      newActionRuleEmailColumn: "",
       packCodeValidationError: false,
-      smsPhoneNumberColumnValidationError: false,
-      emailColumnValidationError: false,
       uacQidMetadataValidationError: false,
       newActionRuleClassifiers: "",
       newActionRuleDescription: "",
@@ -240,20 +190,6 @@ class CollectionExerciseDetails extends Component {
     });
   };
 
-  onNewActionRuleSmsPackCodeChange = (event) => {
-    this.setState({
-      smsPackCodeValidationError: false,
-      newActionRuleSmsPackCode: event.target.value,
-    });
-  };
-
-  onNewActionRuleEmailPackCodeChange = (event) => {
-    this.setState({
-      emailPackCodeValidationError: false,
-      newActionRuleEmailPackCode: event.target.value,
-    });
-  };
-
   onNewActionRuleClassifiersChange = (event) => {
     this.setState({
       newActionRuleClassifiers: event.target.value,
@@ -278,20 +214,6 @@ class CollectionExerciseDetails extends Component {
     this.setState({
       newActionRuleType: event.target.value,
       actionRuleTypeValidationError: false,
-    });
-  };
-
-  onNewActionRuleSmsPhoneNumberChange = (event) => {
-    this.setState({
-      newActionRuleSmsPhoneNumberColumn: event.target.value,
-      smsPhoneNumberColumnValidationError: false,
-    });
-  };
-
-  onNewActionRuleEmailChange = (event) => {
-    this.setState({
-      newActionRuleEmailColumn: event.target.value,
-      emailColumnValidationError: false,
     });
   };
 
@@ -332,38 +254,6 @@ class CollectionExerciseDetails extends Component {
       failedValidation = true;
     }
 
-    if (
-      !this.state.newActionRuleSmsPackCode &&
-      this.state.newActionRuleType === "SMS"
-    ) {
-      this.setState({ smsPackCodeValidationError: true });
-      failedValidation = true;
-    }
-
-    if (
-      !this.state.newActionRuleEmailPackCode &&
-      this.state.newActionRuleType === "EMAIL"
-    ) {
-      this.setState({ emailPackCodeValidationError: true });
-      failedValidation = true;
-    }
-
-    if (
-      !this.state.newActionRuleSmsPhoneNumberColumn &&
-      this.state.newActionRuleType === "SMS"
-    ) {
-      this.setState({ smsPhoneNumberColumnValidationError: true });
-      failedValidation = true;
-    }
-
-    if (
-      !this.state.newActionRuleEmailColumn &&
-      this.state.newActionRuleType === "EMAIL"
-    ) {
-      this.setState({ emailColumnValidationError: true });
-      failedValidation = true;
-    }
-
     var uacMetadataJson = null;
 
     if (this.state.newUacQidMetadata.length > 0) {
@@ -386,23 +276,11 @@ class CollectionExerciseDetails extends Component {
     }
 
     let newActionRulePackCode = "";
-    let newActionRuleSmsPhoneNumberColumn = null;
-    let newActionRuleEmailColumn = null;
 
     if (this.state.newActionRuleType === "EXPORT_FILE") {
       newActionRulePackCode = this.state.newActionRuleExportFilePackCode;
     }
 
-    if (this.state.newActionRuleType === "SMS") {
-      newActionRulePackCode = this.state.newActionRuleSmsPackCode;
-      newActionRuleSmsPhoneNumberColumn =
-        this.state.newActionRuleSmsPhoneNumberColumn;
-    }
-
-    if (this.state.newActionRuleType === "EMAIL") {
-      newActionRulePackCode = this.state.newActionRuleEmailPackCode;
-      newActionRuleEmailColumn = this.state.newActionRuleEmailColumn;
-    }
 
     const newActionRule = {
       type: this.state.newActionRuleType,
@@ -413,8 +291,6 @@ class CollectionExerciseDetails extends Component {
       classifiers: this.state.newActionRuleClassifiers,
       packCode: newActionRulePackCode,
       collectionExerciseId: this.props.collectionExerciseId,
-      phoneNumberColumn: newActionRuleSmsPhoneNumberColumn,
-      emailColumn: newActionRuleEmailColumn,
       uacMetadata: uacMetadataJson,
     };
 
@@ -523,10 +399,6 @@ class CollectionExerciseDetails extends Component {
         ),
         DEACTIVATE_UAC: this.state.authorisedActivities.includes(
           "CREATE_DEACTIVATE_UAC_ACTION_RULE",
-        ),
-        SMS: this.state.authorisedActivities.includes("CREATE_SMS_ACTION_RULE"),
-        EMAIL: this.state.authorisedActivities.includes(
-          "CREATE_EMAIL_ACTION_RULE",
         ),
         EQ_FLUSH: this.state.authorisedActivities.includes(
           "CREATE_EQ_FLUSH_ACTION_RULE",
@@ -652,36 +524,12 @@ class CollectionExerciseDetails extends Component {
       ),
     );
 
-    const smsPackCodeMenuItems = this.state.smsPackCodes.map((packCode) => (
-      <MenuItem key={packCode} value={packCode} id={packCode}>
-        {packCode}
-      </MenuItem>
-    ));
-
-    const emailPackCodeMenuItems = this.state.emailPackCodes.map((packCode) => (
-      <MenuItem key={packCode} value={packCode} id={packCode}>
-        {packCode}
-      </MenuItem>
-    ));
-
     let allowedActionRuleTypeMenuItems = [];
     if (
       this.state.authorisedActivities.includes("CREATE_EXPORT_FILE_ACTION_RULE")
     ) {
       allowedActionRuleTypeMenuItems.push(
         <MenuItem value={"EXPORT_FILE"}>Export File</MenuItem>,
-      );
-    }
-
-    if (this.state.authorisedActivities.includes("CREATE_SMS_ACTION_RULE")) {
-      allowedActionRuleTypeMenuItems.push(
-        <MenuItem value={"SMS"}>SMS</MenuItem>,
-      );
-    }
-
-    if (this.state.authorisedActivities.includes("CREATE_EMAIL_ACTION_RULE")) {
-      allowedActionRuleTypeMenuItems.push(
-        <MenuItem value={"EMAIL"}>Email</MenuItem>,
       );
     }
 
@@ -823,53 +671,6 @@ class CollectionExerciseDetails extends Component {
                         id="selectActionRuleExportFilePackCode"
                       >
                         {exportFilePackCodeMenuItems}
-                      </Select>
-                    </FormControl>
-                    <FormControl fullWidth={true}>
-                      <TextField
-                        style={{ minWidth: 200 }}
-                        error={this.state.uacQidMetadataValidationError}
-                        label="UAC QID Metadata"
-                        onChange={this.onNewActionRuleUacQidMetadataChange}
-                        value={this.state.newUacQidMetadata}
-                      />
-                    </FormControl>
-                  </>
-                )}
-                {this.state.newActionRuleType === "SMS" && (
-                  <>
-                    <FormControl required fullWidth={true}>
-                      <InputLabel>Pack Code</InputLabel>
-                      <Select
-                        onChange={this.onNewActionRuleSmsPackCodeChange}
-                        value={this.state.newActionRuleSmsPackCode}
-                        error={this.state.smsPackCodeValidationError}
-                      >
-                        {smsPackCodeMenuItems}
-                      </Select>
-                    </FormControl>
-                    <FormControl fullWidth={true}>
-                      <TextField
-                        style={{ minWidth: 200 }}
-                        error={this.state.uacQidMetadataValidationError}
-                        label="UAC QID Metadata"
-                        onChange={this.onNewActionRuleUacQidMetadataChange}
-                        value={this.state.newUacQidMetadata}
-                      />
-                    </FormControl>
-                  </>
-                )}
-                {this.state.newActionRuleType === "EMAIL" && (
-                  <>
-                    <FormControl required fullWidth={true}>
-                      <InputLabel>Pack Code</InputLabel>
-                      <Select
-                        onChange={this.onNewActionRuleEmailPackCodeChange}
-                        value={this.state.newActionRuleEmailPackCode}
-                        error={this.state.emailPackCodeValidationError}
-                        id="selectActionRuleEmailPackCode"
-                      >
-                        {emailPackCodeMenuItems}
                       </Select>
                     </FormControl>
                     <FormControl fullWidth={true}>

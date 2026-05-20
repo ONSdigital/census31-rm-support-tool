@@ -83,37 +83,6 @@ class AllEndpointsIT {
           return actionRuleDto;
         });
 
-    // TODO Currently there's no SMS or EMAIL columns in the sample so these features will break.
-    // Will we need action
-    // rules for emails and sms or will it just be print
-    //    integrationTestHelper.testPost(
-    //        port,
-    //        UserGroupAuthorisedActivityType.CREATE_SMS_ACTION_RULE,
-    //        (bundle) -> "actionRules",
-    //        (bundle) -> {
-    //          ActionRuleDto actionRuleDto = new ActionRuleDto();
-    //          actionRuleDto.setType(ActionRuleType.SMS);
-    //          actionRuleDto.setCollectionExerciseId(bundle.getCollexId());
-    //          actionRuleDto.setTriggerDateTime(OffsetDateTime.now());
-    //          actionRuleDto.setPackCode(bundle.getSmsTemplatePackCode());
-    //          actionRuleDto.setPhoneNumberColumn("testPhoneNumber");
-    //          return actionRuleDto;
-    //        });
-    //
-    //    integrationTestHelper.testPost(
-    //        port,
-    //        UserGroupAuthorisedActivityType.CREATE_EMAIL_ACTION_RULE,
-    //        (bundle) -> "actionRules",
-    //        (bundle) -> {
-    //          ActionRuleDto actionRuleDto = new ActionRuleDto();
-    //          actionRuleDto.setType(ActionRuleType.EMAIL);
-    //          actionRuleDto.setCollectionExerciseId(bundle.getCollexId());
-    //          actionRuleDto.setTriggerDateTime(OffsetDateTime.now());
-    //          actionRuleDto.setPackCode(bundle.getEmailTemplatePackCode());
-    //          actionRuleDto.setEmailColumn("testEmail");
-    //          return actionRuleDto;
-    //        });
-
     integrationTestHelper.testPost(
         port,
         UserGroupAuthorisedActivityType.CREATE_OUTBOUND_PHONE_ACTION_RULE,
@@ -157,19 +126,6 @@ class AllEndpointsIT {
         (bundle) -> {
           ActionRuleDto actionRuleDto = new ActionRuleDto();
           actionRuleDto.setType(ActionRuleType.EQ_FLUSH);
-          actionRuleDto.setCollectionExerciseId(bundle.getCollexId());
-          actionRuleDto.setTriggerDateTime(OffsetDateTime.now());
-          return actionRuleDto;
-        });
-
-    integrationTestHelper.testPut(
-        port,
-        UserGroupAuthorisedActivityType.CREATE_EMAIL_ACTION_RULE,
-        (bundle) -> "actionRules",
-        (bundle) -> {
-          ActionRuleDto actionRuleDto = new ActionRuleDto();
-          actionRuleDto.setType(ActionRuleType.EMAIL);
-          actionRuleDto.setActionRuleId(bundle.getActionRuleId());
           actionRuleDto.setCollectionExerciseId(bundle.getCollexId());
           actionRuleDto.setTriggerDateTime(OffsetDateTime.now());
           return actionRuleDto;
