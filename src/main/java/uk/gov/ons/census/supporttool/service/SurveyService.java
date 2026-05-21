@@ -42,8 +42,6 @@ public class SurveyService {
     surveyUpdate.setSurveyId(survey.getId());
     surveyUpdate.setName(survey.getName());
     surveyUpdate.setMetadata(survey.getMetadata());
-    surveyUpdate.setSampleDefinition(survey.getSampleValidationRules());
-    surveyUpdate.setSampleDefinitionUrl(survey.getSampleDefinitionUrl());
 
     List<AllowedFulfilmentDto> allowedPrintFulfilments;
 

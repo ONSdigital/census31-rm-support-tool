@@ -141,7 +141,7 @@ public class FulfilmentSurveyExportFileTemplateEndpoint {
           "Export File Template already exists for survey", HttpStatus.CONFLICT);
     }
 
-    Optional<String> errorOpt = validate(survey, Set.of(exportFileTemplate.getTemplate()));
+    Optional<String> errorOpt = validate(Set.of(exportFileTemplate.getTemplate()));
     if (errorOpt.isPresent()) {
       return new ResponseEntity<>(errorOpt.get(), HttpStatus.BAD_REQUEST);
     }

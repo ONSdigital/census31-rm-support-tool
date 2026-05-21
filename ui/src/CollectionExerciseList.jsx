@@ -16,14 +16,12 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import { errorAlert, getAuthorisedActivities, getLocalDateTime } from "./Utils";
 import { Link } from "react-router-dom";
-import JSONPretty from "react-json-pretty";
 
 class CollectionExerciseList extends Component {
   state = {
     authorisedActivities: [],
     collectionExercises: [],
     showCreateCollectionExerciseDialog: false,
-    collectionInstrumentRulesToShow: null,
     newCollectionExerciseName: "",
     newCollectionExerciseNameError: false,
     newCollectionExerciseReference: "",
@@ -62,16 +60,6 @@ class CollectionExerciseList extends Component {
     this.setState({
       collectionExercises: collexJson,
     });
-  };
-
-  openCollectionInstrumentRulesDialog = (collectionInstrumentRulesToShow) => {
-    this.setState({
-      collectionInstrumentRulesToShow: collectionInstrumentRulesToShow,
-    });
-  };
-
-  closeCollectionInstrumentRulesDialog = () => {
-    this.setState({ collectionInstrumentRulesToShow: null });
   };
 
   openCreateCollectionExerciseDialog = () => {
@@ -190,23 +178,6 @@ class CollectionExerciseList extends Component {
       }
     }
 
-    let ciRulesJson = null;
-    if (this.state.newCollectionExerciseCIRules.length > 0) {
-      try {
-        ciRulesJson = JSON.parse(this.state.newCollectionExerciseCIRules);
-        if (Object.keys(ciRulesJson).length === 0) {
-          this.setState({ newCollectionExerciseCIRulesError: true });
-          validationFailed = true;
-        }
-      } catch (err) {
-        this.setState({ newCollectionExerciseCIRulesError: true });
-        validationFailed = true;
-      }
-    } else {
-      this.setState({ newCollectionExerciseCIRulesError: true });
-      validationFailed = true;
-    }
-
     if (validationFailed) {
       this.createCollectionExerciseInProgress = false;
       return;
@@ -221,7 +192,6 @@ class CollectionExerciseList extends Component {
       ).toISOString(),
       endDate: new Date(this.state.newCollectionExerciseEndDate).toISOString(),
       metadata: metadataJson,
-      collectionInstrumentSelectionRules: ciRulesJson,
     };
 
     const response = await fetch("/api/collectionExercises", {
@@ -266,18 +236,6 @@ class CollectionExerciseList extends Component {
           <TableCell component="th" scope="row">
             {JSON.stringify(collex.metadata)}
           </TableCell>
-          <TableCell component="th" scope="row">
-            <Button
-              variant="contained"
-              onClick={() =>
-                this.openCollectionInstrumentRulesDialog(
-                  collex.collectionInstrumentSelectionRules,
-                )
-              }
-            >
-              View Rules
-            </Button>
-          </TableCell>
         </TableRow>
       ),
     );
@@ -301,7 +259,6 @@ class CollectionExerciseList extends Component {
                     <TableCell>Start Date</TableCell>
                     <TableCell>End Date</TableCell>
                     <TableCell>Metadata</TableCell>
-                    <TableCell>Collection Instrument Rules</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>{collectionExerciseTableRows}</TableBody>
@@ -309,33 +266,6 @@ class CollectionExerciseList extends Component {
             </TableContainer>
           </>
         )}
-        {this.state.collectionInstrumentRulesToShow && (
-          <Dialog open={true}>
-            <DialogContent style={{ padding: 30 }}>
-              <div>
-                <JSONPretty
-                  id="json-pretty"
-                  data={this.state.collectionInstrumentRulesToShow}
-                  style={{
-                    overflowY: "scroll",
-                    margin: 10,
-                    maxHeight: 500,
-                  }}
-                />
-              </div>
-              <div>
-                <Button
-                  onClick={this.closeCollectionInstrumentRulesDialog}
-                  variant="contained"
-                  style={{ margin: 10, padding: 10 }}
-                >
-                  Close
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-        )}
-
         {this.state.authorisedActivities.includes(
           "CREATE_COLLECTION_EXERCISE",
         ) && (
@@ -405,17 +335,6 @@ class CollectionExerciseList extends Component {
                   label="Metadata"
                   onChange={this.onNewCollectionExerciseMetadataChange}
                   value={this.state.newCollectionExerciseMetadata}
-                />
-                <TextField
-                  id="collectionExerciseCIRulesTextField"
-                  style={{ marginTop: 10 }}
-                  multiline
-                  required
-                  fullWidth={true}
-                  error={this.state.newCollectionExerciseCIRulesError}
-                  label="CI Rules"
-                  onChange={this.onNewCollectionExerciseCIRulesChange}
-                  value={this.state.newCollectionExerciseCIRules}
                 />
               </div>
               <div style={{ marginTop: 10 }}>

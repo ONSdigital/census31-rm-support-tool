@@ -14,8 +14,6 @@ import uk.gov.ons.census.supporttool.model.dto.messaging.InvalidCaseDTO;
 import uk.gov.ons.census.supporttool.model.dto.messaging.PayloadDTO;
 import uk.gov.ons.census.supporttool.model.dto.messaging.PrintFulfilmentDTO;
 import uk.gov.ons.census.supporttool.model.dto.messaging.RefusalDTO;
-import uk.gov.ons.census.supporttool.model.dto.messaging.UpdateSample;
-import uk.gov.ons.census.supporttool.model.dto.messaging.UpdateSampleSensitive;
 import uk.gov.ons.census.supporttool.model.dto.ui.InvalidCase;
 import uk.gov.ons.census.supporttool.model.dto.ui.PrintFulfilment;
 import uk.gov.ons.census.supporttool.model.dto.ui.Refusal;
@@ -36,12 +34,6 @@ public class CaseService {
 
   @Value("${queueconfig.print-fulfilment-topic}")
   private String printFulfilmentTopic;
-
-  @Value("${queueconfig.update-sample-sensitive-topic}")
-  private String updateSampleSensitiveTopic;
-
-  @Value("${queueconfig.update-sample-topic}")
-  private String updateSampleTopic;
 
   @Value("${spring.cloud.gcp.pubsub.project-id}")
   private String pubsubProject;
@@ -75,35 +67,6 @@ public class CaseService {
     event.setPayload(payloadDTO);
 
     String topic = toProjectTopicName(refusalEventTopic, pubsubProject).toString();
-    pubSubTemplate.publish(topic, event);
-  }
-
-  public void buildAndSendUpdateSensitiveSampleEvent(
-      UpdateSampleSensitive updateSampleSensitive, String userEmail) {
-    PayloadDTO payloadDTO = new PayloadDTO();
-    payloadDTO.setUpdateSampleSensitive(updateSampleSensitive);
-
-    EventDTO event = new EventDTO();
-
-    EventHeaderDTO eventHeader = EventHelper.createEventDTO(updateSampleSensitiveTopic, userEmail);
-    event.setHeader(eventHeader);
-    event.setPayload(payloadDTO);
-
-    String topic = toProjectTopicName(updateSampleSensitiveTopic, pubsubProject).toString();
-    pubSubTemplate.publish(topic, event);
-  }
-
-  public void buildAndSendUpdateSampleEvent(UpdateSample updateSample, String userEmail) {
-    PayloadDTO payloadDTO = new PayloadDTO();
-    payloadDTO.setUpdateSample(updateSample);
-
-    EventDTO event = new EventDTO();
-
-    EventHeaderDTO eventHeader = EventHelper.createEventDTO(updateSampleTopic, userEmail);
-    event.setHeader(eventHeader);
-    event.setPayload(payloadDTO);
-
-    String topic = toProjectTopicName(updateSampleTopic, pubsubProject).toString();
     pubSubTemplate.publish(topic, event);
   }
 

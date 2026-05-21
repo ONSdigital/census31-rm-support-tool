@@ -16,7 +16,6 @@ import { errorAlert } from "./Utils";
 class SurveyCaseSearch extends Component {
   state = {
     authorisedActivities: [],
-    sampleColumns: [],
     caseSearchResults: [],
     collectionExercises: [],
     isWaitingForResults: false,
@@ -94,21 +93,6 @@ class SurveyCaseSearch extends Component {
     return /^\+?\d+$/.test(str);
   };
 
-  getSampleColumns = async (authorisedActivities) => {
-    if (!authorisedActivities.includes("VIEW_SURVEY")) return;
-
-    const response = await fetch(`/api/surveys/${this.props.surveyId}`);
-    if (!response.ok) {
-      return;
-    }
-
-    const surveyJson = await response.json();
-    const nonSensitiveColumns = surveyJson.sampleValidationRules
-      .filter((rule) => !rule.sensitive)
-      .map((rule) => rule.columnName);
-
-    this.setState({ sampleColumns: nonSensitiveColumns });
-  };
 
   getCaseCells = (caze) => {
     const caseId = caze.id;
@@ -128,11 +112,6 @@ class SurveyCaseSearch extends Component {
     caseCells.push(
       <TableCell key={1}>{caze.collectionExerciseName}</TableCell>,
     );
-    caseCells.push(
-      this.state.sampleColumns.map((sampleColumn, index) => (
-        <TableCell key={index + 2}>{caze.sample[sampleColumn]}</TableCell>
-      )),
-    );
 
     return caseCells;
   };
@@ -142,12 +121,6 @@ class SurveyCaseSearch extends Component {
     tableHeaderRows.push(<TableCell key={0}>Case Ref</TableCell>);
 
     tableHeaderRows.push(<TableCell key={1}>Collection Exercise</TableCell>);
-
-    tableHeaderRows.push(
-      this.state.sampleColumns.map((sampleColumn, index) => (
-        <TableCell key={index + 2}>{sampleColumn}</TableCell>
-      )),
-    );
 
     return tableHeaderRows;
   }

@@ -7,14 +7,14 @@ import uk.gov.ons.census.common.model.entity.CollectionExercise;
 import uk.gov.ons.census.common.model.entity.JobType;
 import uk.gov.ons.census.common.model.entity.UserGroupAuthorisedActivityType;
 import uk.gov.ons.census.common.validation.ColumnValidator;
+import uk.gov.ons.census.common.validation.SampleFieldValidators;
 
 @Component
 public class JobTypeHelper {
   public String[] getExpectedColumns(JobType jobType, CollectionExercise collectionExercise) {
     switch (jobType) {
       case SAMPLE:
-        ColumnValidator[] columnValidators =
-            collectionExercise.getSurvey().getSampleValidationRules();
+        ColumnValidator[] columnValidators = SampleFieldValidators.getValidators();
         return Arrays.stream(columnValidators)
             .map(columnValidator -> columnValidator.getColumnName())
             .collect(Collectors.toList())
@@ -25,10 +25,6 @@ public class JobTypeHelper {
 
       case BULK_INVALID:
         return new String[] {"caseId", "reason"};
-
-      case BULK_UPDATE_SAMPLE:
-      case BULK_UPDATE_SAMPLE_SENSITIVE:
-        return new String[] {"caseId", "fieldToUpdate", "newValue"};
 
       default:
         // This code should be unreachable, providing we have a case for every JobType
@@ -45,10 +41,6 @@ public class JobTypeHelper {
         return UserGroupAuthorisedActivityType.LOAD_BULK_REFUSAL;
       case BULK_INVALID:
         return UserGroupAuthorisedActivityType.LOAD_BULK_INVALID;
-      case BULK_UPDATE_SAMPLE:
-        return UserGroupAuthorisedActivityType.LOAD_BULK_UPDATE_SAMPLE;
-      case BULK_UPDATE_SAMPLE_SENSITIVE:
-        return UserGroupAuthorisedActivityType.LOAD_BULK_UPDATE_SAMPLE_SENSITIVE;
       default:
         // This code should be unreachable, providing we have a case for every JobType
         throw new RuntimeException(
@@ -64,10 +56,6 @@ public class JobTypeHelper {
         return UserGroupAuthorisedActivityType.VIEW_BULK_REFUSAL_PROGRESS;
       case BULK_INVALID:
         return UserGroupAuthorisedActivityType.VIEW_BULK_INVALID_PROGRESS;
-      case BULK_UPDATE_SAMPLE:
-        return UserGroupAuthorisedActivityType.VIEW_BULK_UPDATE_SAMPLE_PROGRESS;
-      case BULK_UPDATE_SAMPLE_SENSITIVE:
-        return UserGroupAuthorisedActivityType.VIEW_BULK_UPDATE_SAMPLE_SENSITIVE_PROGRESS;
       default:
         // This code should be unreachable, providing we have a case for every JobType
         throw new RuntimeException(

@@ -15,8 +15,6 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.ons.census.common.model.entity.UserGroupAuthorisedActivityType;
-import uk.gov.ons.census.common.validation.ColumnValidator;
-import uk.gov.ons.census.common.validation.Rule;
 import uk.gov.ons.census.supporttool.model.dto.messaging.EventDTO;
 import uk.gov.ons.census.supporttool.model.dto.ui.SurveyDto;
 import uk.gov.ons.census.supporttool.testhelper.IntegrationTestHelper;
@@ -48,9 +46,6 @@ public class SurveyEndpointIT {
     try (QueueSpy<EventDTO> surveyUpdateQueue =
         pubsubHelper.projectListen(SURVEY_UPDATE_TEST_SUBSCRIPTION, EventDTO.class)) {
 
-      ColumnValidator[] testRules =
-          new ColumnValidator[] {new ColumnValidator("foo", false, new Rule[] {})};
-
       integrationTestHelper.testPost(
           port,
           UserGroupAuthorisedActivityType.CREATE_SURVEY,
@@ -59,8 +54,6 @@ public class SurveyEndpointIT {
             SurveyDto surveyDto = new SurveyDto();
             surveyDto.setName("Test New Survey");
             surveyDto.setSampleSeparator(',');
-            surveyDto.setSampleValidationRules(testRules);
-            surveyDto.setSampleDefinitionUrl("http://foo.bar");
             surveyDto.setMetadata(Map.of("foo", "bar"));
             return surveyDto;
           });
@@ -76,11 +69,6 @@ public class SurveyEndpointIT {
           .isEqualTo(Map.of("foo", "bar"));
       RecursiveComparisonConfiguration configuration =
           RecursiveComparisonConfiguration.builder().build();
-      assertThat(emittedEvent.getPayload().getSurveyUpdate().getSampleDefinition())
-          .usingRecursiveComparison(configuration)
-          .isEqualTo(testRules);
-      assertThat(emittedEvent.getPayload().getSurveyUpdate().getSampleDefinitionUrl())
-          .isEqualTo("http://foo.bar");
     }
   }
 }

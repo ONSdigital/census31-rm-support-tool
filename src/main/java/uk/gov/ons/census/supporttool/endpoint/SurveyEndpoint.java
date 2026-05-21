@@ -52,9 +52,7 @@ public class SurveyEndpoint {
     surveyDto.setId(survey.getId());
     surveyDto.setName(survey.getName());
     surveyDto.setSampleSeparator(survey.getSampleSeparator());
-    surveyDto.setSampleValidationRules(survey.getSampleValidationRules());
     surveyDto.setSampleWithHeaderRow(survey.isSampleWithHeaderRow());
-    surveyDto.setSampleDefinitionUrl(survey.getSampleDefinitionUrl());
     surveyDto.setMetadata(survey.getMetadata());
     return surveyDto;
   }
@@ -94,9 +92,7 @@ public class SurveyEndpoint {
     survey.setId(UUID.randomUUID());
     survey.setName(surveyDto.getName());
     survey.setSampleSeparator(surveyDto.getSampleSeparator());
-    survey.setSampleValidationRules(surveyDto.getSampleValidationRules());
     survey.setSampleWithHeaderRow(surveyDto.isSampleWithHeaderRow());
-    survey.setSampleDefinitionUrl(surveyDto.getSampleDefinitionUrl());
     survey.setMetadata(surveyDto.getMetadata());
     survey = surveyRepository.saveAndFlush(survey);
 

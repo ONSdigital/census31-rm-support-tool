@@ -137,7 +137,7 @@ public class ActionRuleSurveyExportFileTemplateEndpoint {
           "Export File Template already exists for survey", HttpStatus.CONFLICT);
     }
 
-    Optional<String> errorOpt = validate(survey, Set.of(exportFileTemplate.getTemplate()));
+    Optional<String> errorOpt = validate(Set.of(exportFileTemplate.getTemplate()));
     if (errorOpt.isPresent()) {
       log.atWarn()
           .setMessage(

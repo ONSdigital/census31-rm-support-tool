@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.fail;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -20,7 +21,6 @@ import uk.gov.ons.census.common.model.entity.ActionRuleStatus;
 import uk.gov.ons.census.common.model.entity.ActionRuleType;
 import uk.gov.ons.census.common.model.entity.Case;
 import uk.gov.ons.census.common.model.entity.CollectionExercise;
-import uk.gov.ons.census.common.model.entity.CollectionInstrumentSelectionRule;
 import uk.gov.ons.census.common.model.entity.EmailTemplate;
 import uk.gov.ons.census.common.model.entity.ExportFileTemplate;
 import uk.gov.ons.census.common.model.entity.SmsTemplate;
@@ -32,8 +32,6 @@ import uk.gov.ons.census.common.model.entity.UserGroupAdmin;
 import uk.gov.ons.census.common.model.entity.UserGroupAuthorisedActivityType;
 import uk.gov.ons.census.common.model.entity.UserGroupMember;
 import uk.gov.ons.census.common.model.entity.UserGroupPermission;
-import uk.gov.ons.census.common.validation.ColumnValidator;
-import uk.gov.ons.census.common.validation.Rule;
 import uk.gov.ons.census.supporttool.model.repository.ActionRuleRepository;
 import uk.gov.ons.census.supporttool.model.repository.CaseRepository;
 import uk.gov.ons.census.supporttool.model.repository.CollectionExerciseRepository;
@@ -72,6 +70,7 @@ public class IntegrationTestHelper {
 
   private static final Map<String, String> TEST_COLLECTION_EXERCISE_UPDATE_METADATA =
       Map.of("TEST_COLLECTION_EXERCISE_UPDATE_METADATA", "TEST");
+  private static final Random RANDOM = new Random();
 
   public IntegrationTestHelper(
       SurveyRepository surveyRepository,
@@ -217,15 +216,7 @@ public class IntegrationTestHelper {
     survey.setId(UUID.randomUUID());
     survey.setName("Test");
     survey.setSampleWithHeaderRow(true);
-    survey.setSampleValidationRules(
-        new ColumnValidator[] {
-          new ColumnValidator("foo", false, new Rule[] {}),
-          new ColumnValidator("bar", false, new Rule[] {}),
-          new ColumnValidator("testPhoneNumber", true, new Rule[] {}),
-          new ColumnValidator("testEmail", true, new Rule[] {})
-        });
     survey.setSampleSeparator(',');
-    survey.setSampleDefinitionUrl("http://foo.bar");
     survey = surveyRepository.saveAndFlush(survey);
 
     CollectionExercise collectionExercise = new CollectionExercise();
@@ -236,16 +227,31 @@ public class IntegrationTestHelper {
     collectionExercise.setStartDate(OffsetDateTime.now());
     collectionExercise.setEndDate(OffsetDateTime.now().plusDays(2));
     collectionExercise.setMetadata(TEST_COLLECTION_EXERCISE_UPDATE_METADATA);
-    collectionExercise.setCollectionInstrumentSelectionRules(
-        new CollectionInstrumentSelectionRule[] {
-          new CollectionInstrumentSelectionRule(0, null, "test instrument", null)
-        });
 
     collectionExercise = collectionExerciseRepository.saveAndFlush(collectionExercise);
 
     Case caze = new Case();
     caze.setId(UUID.randomUUID());
     caze.setCollectionExercise(collectionExercise);
+    caze.setCaseRef(RANDOM.nextLong());
+    caze.setAbpCode("abp");
+    caze.setAddressLevel("1 Address street");
+    caze.setAddressType("HH");
+    caze.setCeExpectedCapacity(0);
+    caze.setFieldCoordinatorId("fcor_id");
+    caze.setFieldOfficerId("foff_id");
+    caze.setHtcDigital("0");
+    caze.setHtcWillingness("0");
+    caze.setLad("0000");
+    caze.setLatitude("0.0.0.0.0.0");
+    caze.setLsoa("0000");
+    caze.setRegion("EN");
+    caze.setOa("0000");
+    caze.setMsoa("0000");
+    caze.setPostcode("CFXX XXX");
+    caze.setTreatmentCode("BLJF_FEJG");
+    caze.setUprn("000000");
+    caze.setTownName("Best Town");
     caze = caseRepository.saveAndFlush(caze);
 
     UacQidLink uacQidLink = new UacQidLink();
@@ -254,19 +260,18 @@ public class IntegrationTestHelper {
     uacQidLink.setUac("TEST_UAC_" + UUID.randomUUID());
     uacQidLink.setUacHash("test fake hash");
     uacQidLink.setCaze(caze);
-    uacQidLink.setCollectionInstrumentUrl("test instrument url");
     uacQidLink = uacQidLinkRepository.saveAndFlush(uacQidLink);
 
     ExportFileTemplate exportFileTemplate = new ExportFileTemplate();
     exportFileTemplate.setPackCode("TEST_PRINT_PACK_CODE_" + UUID.randomUUID());
-    exportFileTemplate.setTemplate(new String[] {"foo", "bar"});
+    exportFileTemplate.setTemplate(new String[] {"UPRN", "ADDRESS_LINE1"});
     exportFileTemplate.setExportFileDestination("test_supplier");
     exportFileTemplate.setDescription("Test description");
     exportFileTemplate = exportFileTemplateRepository.saveAndFlush(exportFileTemplate);
 
     SmsTemplate smsTemplate = new SmsTemplate();
     smsTemplate.setPackCode("TEST_SMS_PACK_CODE_" + UUID.randomUUID());
-    smsTemplate.setTemplate(new String[] {"foo", "bar"});
+    smsTemplate.setTemplate(new String[] {"UPRN", "ADDRESS_LINE1"});
     smsTemplate.setNotifyTemplateId(UUID.randomUUID());
     smsTemplate.setDescription("Test description");
     smsTemplate.setNotifyServiceRef("test_service");
@@ -274,7 +279,7 @@ public class IntegrationTestHelper {
 
     EmailTemplate emailTemplate = new EmailTemplate();
     emailTemplate.setPackCode("TEST_EMAIL_PACK_CODE_" + UUID.randomUUID());
-    emailTemplate.setTemplate(new String[] {"foo", "bar"});
+    emailTemplate.setTemplate(new String[] {"UPRN", "ADDRESS_LINE1"});
     emailTemplate.setNotifyTemplateId(UUID.randomUUID());
     emailTemplate.setDescription("Test description");
     emailTemplate.setNotifyServiceRef("test_service");
@@ -291,7 +296,6 @@ public class IntegrationTestHelper {
     actionRule.setId(UUID.randomUUID());
     actionRule.setCollectionExercise(collectionExercise);
     actionRule.setType(ActionRuleType.EMAIL);
-    actionRule.setClassifiers("sample ->> 'ORG_SIZE' = 'HUGE'");
     actionRule.setTriggerDateTime(OffsetDateTime.now());
     actionRule.setCreatedBy("TEST_USER");
     actionRule.setEmailTemplate(emailTemplate);

@@ -149,41 +149,6 @@ export const getActionRuleEmailPackCodesForSurvey = async (
   return emailTemplatesJson;
 };
 
-export const getSensitiveSampleColumns = async (
-  authorisedActivities,
-  surveyId,
-) => {
-  // The caller should probably check this, but it's here as a belt-and-braces in case of badly behaved programmers
-  if (!authorisedActivities.includes("VIEW_SURVEY")) return [];
-
-  const response = await fetch(`/api/surveys/${surveyId}`);
-  if (!response.ok) {
-    return;
-  }
-
-  const surveyJson = await response.json();
-  const sensitiveColumns = surveyJson.sampleValidationRules
-    .filter((rule) => rule.sensitive)
-    .map((rule) => rule.columnName);
-
-  return sensitiveColumns;
-};
-
-export const getSampleColumns = async (authorisedActivities, surveyId) => {
-  if (!authorisedActivities.includes("VIEW_SURVEY")) return [];
-
-  const response = await fetch(`/api/surveys/${surveyId}`);
-  if (!response.ok) {
-    return;
-  }
-
-  const surveyJson = await response.json();
-  const sampleColumns = surveyJson.sampleValidationRules
-    .filter((rule) => !rule.sensitive)
-    .map((rule) => rule.columnName);
-
-  return sampleColumns;
-};
 
 // This is not efficent, but it seems to work ok ish
 export const getAuthorisedActivities = async () => {

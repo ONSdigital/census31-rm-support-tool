@@ -134,7 +134,7 @@ public class ActionRuleSurveyEmailTemplateEndpoint {
       return new ResponseEntity<>("Email Template already exists for survey", HttpStatus.CONFLICT);
     }
 
-    Optional<String> errorOpt = validate(survey, Set.of(emailTemplate.getTemplate()));
+    Optional<String> errorOpt = validate(Set.of(emailTemplate.getTemplate()));
     if (errorOpt.isPresent()) {
       log.atWarn()
           .setMessage(

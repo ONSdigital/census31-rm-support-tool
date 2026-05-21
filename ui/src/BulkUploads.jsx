@@ -30,15 +30,6 @@ const BULK_INVALID_JOB_TYPE = "BULK_INVALID";
 const BULK_INVALID_VIEW_PERMISSION = "VIEW_BULK_INVALID_PROGRESS";
 const BULK_INVALID_LOAD_PERMISSION = "LOAD_BULK_INVALID";
 
-const BULK_UPDATE_SAMPLE_JOB_TYPE = "BULK_UPDATE_SAMPLE";
-const BULK_UPDATE_SAMPLE_VIEW_PERMISSION = "VIEW_BULK_UPDATE_SAMPLE_PROGRESS";
-const BULK_UPDATE_SAMPLE_LOAD_PERMISSION = "LOAD_BULK_UPDATE_SAMPLE";
-
-const BULK_UPDATE_SAMPLE_SENSITIVE = "BULK_UPDATE_SAMPLE_SENSITIVE";
-const BULK_UPDATE_SAMPLE_SENSITIVE_VIEW_PERMISSION =
-  "VIEW_BULK_UPDATE_SAMPLE_SENSITIVE_PROGRESS";
-const BULK_UPDATE_SAMPLE_SENSITIVE_LOAD_PERMISSION =
-  "LOAD_BULK_UPDATE_SAMPLE_SENSITIVE";
 
 class BulkUploads extends Component {
   state = {
@@ -49,8 +40,6 @@ class BulkUploads extends Component {
     showDetails: false, // Flag to display the job details dialog
     bulkRefusalJobs: [],
     bulkInvalidJobs: [],
-    bulkUpdateSampleJobs: [],
-    bulkUpdateSampleSensitiveJobs: [],
     showCancelDialog: false,
   };
 
@@ -94,18 +83,7 @@ class BulkUploads extends Component {
       BULK_INVALID_VIEW_PERMISSION,
       "bulkInvalidJobs",
     );
-    this.refreshBulkJobsFromBackend(
-      authorisedActivities,
-      BULK_UPDATE_SAMPLE_JOB_TYPE,
-      BULK_UPDATE_SAMPLE_VIEW_PERMISSION,
-      "bulkUpdateSampleJobs",
-    );
-    this.refreshBulkJobsFromBackend(
-      authorisedActivities,
-      BULK_UPDATE_SAMPLE_SENSITIVE,
-      BULK_UPDATE_SAMPLE_SENSITIVE_VIEW_PERMISSION,
-      "bulkUpdateSampleSensitiveJobs",
-    );
+
   };
 
   getAuthorisedActivities = async () => {
@@ -355,20 +333,6 @@ class BulkUploads extends Component {
         detailsDialogTitle = "Bulk Case Invalidation Detail";
         loadPermission = BULK_INVALID_LOAD_PERMISSION;
         break;
-      case BULK_UPDATE_SAMPLE_JOB_TYPE:
-        selectedJob = this.state.bulkUpdateSampleJobs.find(
-          (job) => job.id === this.state.selectedJob,
-        );
-        detailsDialogTitle = "Bulk Update Sample Detail";
-        loadPermission = BULK_UPDATE_SAMPLE_LOAD_PERMISSION;
-        break;
-      case BULK_UPDATE_SAMPLE_SENSITIVE:
-        selectedJob = this.state.bulkUpdateSampleSensitiveJobs.find(
-          (job) => job.id === this.state.selectedJob,
-        );
-        detailsDialogTitle = "Bulk Update Sample Sensitive Detail";
-        loadPermission = BULK_UPDATE_SAMPLE_SENSITIVE_LOAD_PERMISSION;
-        break;
       default:
     }
 
@@ -397,22 +361,6 @@ class BulkUploads extends Component {
           "Bulk Case Invalidation",
           BULK_INVALID_LOAD_PERMISSION,
           BULK_INVALID_VIEW_PERMISSION,
-        )}
-
-        {this.buildBulkProcessTable(
-          this.state.bulkUpdateSampleJobs,
-          BULK_UPDATE_SAMPLE_JOB_TYPE,
-          "Bulk Update Sample",
-          BULK_UPDATE_SAMPLE_LOAD_PERMISSION,
-          BULK_UPDATE_SAMPLE_VIEW_PERMISSION,
-        )}
-
-        {this.buildBulkProcessTable(
-          this.state.bulkUpdateSampleSensitiveJobs,
-          BULK_UPDATE_SAMPLE_SENSITIVE,
-          "Bulk Update Sample Sensitive",
-          BULK_UPDATE_SAMPLE_SENSITIVE_LOAD_PERMISSION,
-          BULK_UPDATE_SAMPLE_SENSITIVE_VIEW_PERMISSION,
         )}
 
         <Dialog open={this.state.uploadInProgress}>

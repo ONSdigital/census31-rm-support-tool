@@ -3,7 +3,6 @@ package uk.gov.ons.census.supporttool.model.dto.messaging;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 import lombok.Data;
-import uk.gov.ons.census.common.model.entity.CollectionInstrumentSelectionRule;
 
 @Data
 public class CollectionExerciseUpdateDTO {
@@ -14,5 +13,4 @@ public class CollectionExerciseUpdateDTO {
   private OffsetDateTime startDate;
   private OffsetDateTime endDate;
   private Object metadata;
-  private CollectionInstrumentSelectionRule[] collectionInstrumentRules;
 }

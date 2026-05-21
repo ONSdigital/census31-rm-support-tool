@@ -18,7 +18,6 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,7 +27,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import uk.gov.ons.census.common.model.entity.CollectionExercise;
-import uk.gov.ons.census.common.model.entity.CollectionInstrumentSelectionRule;
 import uk.gov.ons.census.common.model.entity.Survey;
 import uk.gov.ons.census.common.model.entity.UserGroupAuthorisedActivityType;
 import uk.gov.ons.census.supporttool.model.dto.messaging.CollectionExerciseUpdateDTO;
@@ -138,8 +136,6 @@ public class CollectionExerciseEndpoint {
     collectionExerciseDto.setStartDate(collex.getStartDate());
     collectionExerciseDto.setEndDate(collex.getEndDate());
     collectionExerciseDto.setMetadata(collex.getMetadata());
-    collectionExerciseDto.setCollectionInstrumentSelectionRules(
-        collex.getCollectionInstrumentSelectionRules());
     return collectionExerciseDto;
   }
 
@@ -168,9 +164,6 @@ public class CollectionExerciseEndpoint {
                   return new ResponseStatusException(HttpStatus.BAD_REQUEST, "Survey not found");
                 });
 
-    validateCollectionInstrumentRules(
-        collectionExerciseDto.getCollectionInstrumentSelectionRules(), userEmail);
-
     CollectionExercise collectionExercise = new CollectionExercise();
     collectionExercise.setId(UUID.randomUUID());
     collectionExercise.setName(collectionExerciseDto.getName());
@@ -179,8 +172,6 @@ public class CollectionExerciseEndpoint {
     collectionExercise.setStartDate(collectionExerciseDto.getStartDate());
     collectionExercise.setEndDate(collectionExerciseDto.getEndDate());
     collectionExercise.setMetadata(collectionExerciseDto.getMetadata());
-    collectionExercise.setCollectionInstrumentSelectionRules(
-        collectionExerciseDto.getCollectionInstrumentSelectionRules());
     collectionExercise = collectionExerciseRepository.saveAndFlush(collectionExercise);
 
     CollectionExerciseUpdateDTO collectionExerciseUpdate = new CollectionExerciseUpdateDTO();
@@ -191,8 +182,6 @@ public class CollectionExerciseEndpoint {
     collectionExerciseUpdate.setStartDate(collectionExercise.getStartDate());
     collectionExerciseUpdate.setEndDate(collectionExercise.getEndDate());
     collectionExerciseUpdate.setMetadata(collectionExercise.getMetadata());
-    collectionExerciseUpdate.setCollectionInstrumentRules(
-        collectionExercise.getCollectionInstrumentSelectionRules());
 
     PayloadDTO payloadDTO = new PayloadDTO();
     payloadDTO.setCollectionExerciseUpdate(collectionExerciseUpdate);
@@ -214,64 +203,5 @@ public class CollectionExerciseEndpoint {
     }
 
     return new ResponseEntity<>(collectionExercise.getId(), HttpStatus.CREATED);
-  }
-
-  private void validateCollectionInstrumentRules(
-      CollectionInstrumentSelectionRule[] collectionInstrumentSelectionRules, String userEmail) {
-    boolean foundDefaultRuleWithNullExpression = false;
-
-    for (CollectionInstrumentSelectionRule collectionInstrumentSelectionRule :
-        collectionInstrumentSelectionRules) {
-      if (!StringUtils.hasText(collectionInstrumentSelectionRule.getCollectionInstrumentUrl())) {
-        log.atWarn()
-            .setMessage("Failed to create collection exercise, CI URL cannot be blank")
-            .addKeyValue("httpStatus", HttpStatus.BAD_REQUEST)
-            .addKeyValue("userEmail", userEmail)
-            .log();
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "CI URL cannot be blank");
-      }
-
-      String spelExpression = collectionInstrumentSelectionRule.getSpelExpression();
-
-      if (spelExpression == null) {
-        if (collectionInstrumentSelectionRule.getPriority() == 0) {
-          foundDefaultRuleWithNullExpression = true;
-        }
-
-        continue;
-      } else if (!StringUtils.hasText(spelExpression)) {
-        log.atWarn()
-            .setMessage("Failed to create collection exercise, SPEL expression cannot be blank")
-            .addKeyValue("httpStatus", HttpStatus.BAD_REQUEST)
-            .addKeyValue("userEmail", userEmail)
-            .log();
-        throw new ResponseStatusException(
-            HttpStatus.BAD_REQUEST, "SPEL expression cannot be blank");
-      }
-
-      try {
-        expressionParser.parseExpression(spelExpression);
-      } catch (Exception e) {
-        log.atWarn()
-            .setMessage("Failed to create collection exercise, Invalid SPEL")
-            .addKeyValue("httpStatus", HttpStatus.BAD_REQUEST)
-            .addKeyValue("spelExpression", spelExpression)
-            .addKeyValue("userEmail", userEmail)
-            .log();
-        throw new ResponseStatusException(
-            HttpStatus.BAD_REQUEST, "Invalid SPEL: " + spelExpression, e);
-      }
-    }
-
-    if (!foundDefaultRuleWithNullExpression) {
-      log.atWarn()
-          .setMessage(
-              "Failed to create collection exercise, Rules must include zero priority default with null expression")
-          .addKeyValue("httpStatus", HttpStatus.BAD_REQUEST)
-          .addKeyValue("userEmail", userEmail)
-          .log();
-      throw new ResponseStatusException(
-          HttpStatus.BAD_REQUEST, "Rules must include zero priority default with null expression");
-    }
   }
 }

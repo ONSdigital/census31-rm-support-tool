@@ -2,7 +2,6 @@ package uk.gov.ons.census.supporttool.endpoint;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import org.slf4j.Logger;
@@ -21,10 +20,7 @@ import uk.gov.ons.census.common.model.entity.Case;
 import uk.gov.ons.census.common.model.entity.Event;
 import uk.gov.ons.census.common.model.entity.UacQidLink;
 import uk.gov.ons.census.common.model.entity.UserGroupAuthorisedActivityType;
-import uk.gov.ons.census.common.validation.ColumnValidator;
 import uk.gov.ons.census.supporttool.client.NotifyServiceClient;
-import uk.gov.ons.census.supporttool.model.dto.messaging.UpdateSample;
-import uk.gov.ons.census.supporttool.model.dto.messaging.UpdateSampleSensitive;
 import uk.gov.ons.census.supporttool.model.dto.rest.EmailFulfilment;
 import uk.gov.ons.census.supporttool.model.dto.rest.RequestDTO;
 import uk.gov.ons.census.supporttool.model.dto.rest.RequestHeaderDTO;
@@ -75,7 +71,29 @@ public class CaseEndpoint {
     caseDto.setInvalid(caze.isInvalid());
     caseDto.setCreatedAt(caze.getCreatedAt());
     caseDto.setLastUpdatedAt(caze.getLastUpdatedAt());
-    caseDto.setSample(caze.getSample());
+    caseDto.setTreatmentCode(caze.getTreatmentCode());
+    caseDto.setUprn(caze.getUprn());
+    caseDto.setEstabUprn(caze.getEstabUprn());
+    caseDto.setEstabType(caze.getEstabType());
+    caseDto.setAddressLine1(caze.getAddressLine1());
+    caseDto.setTownName(caze.getTownName());
+    caseDto.setRegion(caze.getRegion());
+    caseDto.setPostcode(caze.getPostcode());
+    caseDto.setAddressType(caze.getAddressType());
+    caseDto.setAddressLevel(caze.getAddressLevel());
+    caseDto.setAbpCode(caze.getAbpCode());
+    caseDto.setFieldCoordinatorId(caze.getFieldCoordinatorId());
+    caseDto.setFieldOfficerId(caze.getFieldOfficerId());
+    caseDto.setOa(caze.getOa());
+    caseDto.setLsoa(caze.getLsoa());
+    caseDto.setMsoa(caze.getMsoa());
+    caseDto.setLad(caze.getLad());
+    caseDto.setHtcDigital(caze.getHtcDigital());
+    caseDto.setHtcWillingness(caze.getHtcWillingness());
+    caseDto.setLatitude(caze.getLatitude());
+    caseDto.setLongitude(caze.getLongitude());
+    caseDto.setPrintBatch(caze.getPrintBatch());
+    caseDto.setSecureEstablishment(caze.isSecureEstablishment());
 
     List<EventDto> events = new LinkedList<>();
     for (Event event : caze.getEvents()) {
@@ -118,98 +136,6 @@ public class CaseEndpoint {
     eventDto.setPayload(event.getPayload());
     eventDto.setCorrelationId(event.getCorrelationId());
     return eventDto;
-  }
-
-  @PostMapping("{caseId}/action/updateSensitiveField")
-  public ResponseEntity<?> updateSensitiveField(
-      @PathVariable(value = "caseId") UUID caseId,
-      @RequestBody UpdateSampleSensitive updateSampleSensitive,
-      @Value("#{request.getAttribute('userEmail')}") String userEmail) {
-
-    Case caze = caseService.getCaseByCaseId(caseId);
-
-    authUser.checkUserPermission(
-        userEmail,
-        caze.getCollectionExercise().getSurvey().getId(),
-        UserGroupAuthorisedActivityType.UPDATE_SAMPLE_SENSITIVE);
-
-    List<String> validationErrors =
-        validateFieldToUpdate(caze, updateSampleSensitive.getSampleSensitive(), true);
-
-    if (!validationErrors.isEmpty()) {
-      String validationErrorStr = String.join(", ", validationErrors);
-      Map<String, String> body = Map.of("errors", validationErrorStr);
-      log.atWarn()
-          .setMessage(
-              "Failed to update sensitive field, there are case validation errors in the provided data")
-          .addKeyValue("httpStatus", HttpStatus.BAD_REQUEST)
-          .addKeyValue("userEmail", userEmail)
-          .log();
-      return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
-    }
-
-    caseService.buildAndSendUpdateSensitiveSampleEvent(updateSampleSensitive, userEmail);
-
-    return new ResponseEntity<>(HttpStatus.OK);
-  }
-
-  @PostMapping("{caseId}/action/updateSampleField")
-  public ResponseEntity<?> updateSampleField(
-      @PathVariable(value = "caseId") UUID caseId,
-      @RequestBody UpdateSample updateSample,
-      @Value("#{request.getAttribute('userEmail')}") String userEmail) {
-
-    Case caze = caseService.getCaseByCaseId(caseId);
-
-    authUser.checkUserPermission(
-        userEmail,
-        caze.getCollectionExercise().getSurvey().getId(),
-        UserGroupAuthorisedActivityType.UPDATE_SAMPLE);
-
-    List<String> validationErrors = validateFieldToUpdate(caze, updateSample.getSample(), false);
-
-    if (!validationErrors.isEmpty()) {
-      String validationErrorStr = String.join(", ", validationErrors);
-      Map<String, String> body = Map.of("errors", validationErrorStr);
-      log.atWarn()
-          .setMessage(
-              "Failed to update sample field, there are validation errors in the provided data")
-          .addKeyValue("httpStatus", HttpStatus.BAD_REQUEST)
-          .addKeyValue("userEmail", userEmail)
-          .log();
-      return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
-    }
-
-    caseService.buildAndSendUpdateSampleEvent(updateSample, userEmail);
-
-    return new ResponseEntity<>(HttpStatus.OK);
-  }
-
-  private List<String> validateFieldToUpdate(
-      Case caze, Map<String, String> fieldAndValueToValidate, boolean sensitiveData) {
-    ColumnValidator[] columnValidators =
-        caze.getCollectionExercise().getSurvey().getSampleValidationRules();
-    List<String> allValidationErrors = new LinkedList<>();
-
-    for (var dataToValidate : fieldAndValueToValidate.entrySet()) {
-
-      if (dataToValidate.getValue().length() == 0 && sensitiveData) {
-        // Blanking out the sensitive PII data is allowed, for GDPR reasons
-        continue;
-      }
-
-      for (ColumnValidator columnValidator : columnValidators) {
-        if (columnValidator.getColumnName().equals(dataToValidate.getKey())) {
-          Map<String, String> validateThis =
-              Map.of(dataToValidate.getKey(), dataToValidate.getValue());
-
-          Optional<String> validationErrors = columnValidator.validateRow(validateThis);
-          validationErrors.ifPresent(validationError -> allValidationErrors.add(validationError));
-        }
-      }
-    }
-
-    return allValidationErrors;
   }
 
   @PostMapping(value = "/{caseId}/action/refusal")

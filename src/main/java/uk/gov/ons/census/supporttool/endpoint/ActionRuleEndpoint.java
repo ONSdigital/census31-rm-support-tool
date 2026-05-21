@@ -1,13 +1,10 @@
 package uk.gov.ons.census.supporttool.endpoint;
 
 import static uk.gov.ons.census.common.model.entity.UserGroupAuthorisedActivityType.CREATE_DEACTIVATE_UAC_ACTION_RULE;
-import static uk.gov.ons.census.common.model.entity.UserGroupAuthorisedActivityType.CREATE_EMAIL_ACTION_RULE;
 import static uk.gov.ons.census.common.model.entity.UserGroupAuthorisedActivityType.CREATE_EQ_FLUSH_ACTION_RULE;
 import static uk.gov.ons.census.common.model.entity.UserGroupAuthorisedActivityType.CREATE_EXPORT_FILE_ACTION_RULE;
 import static uk.gov.ons.census.common.model.entity.UserGroupAuthorisedActivityType.CREATE_FACE_TO_FACE_ACTION_RULE;
 import static uk.gov.ons.census.common.model.entity.UserGroupAuthorisedActivityType.CREATE_OUTBOUND_PHONE_ACTION_RULE;
-import static uk.gov.ons.census.common.model.entity.UserGroupAuthorisedActivityType.CREATE_SMS_ACTION_RULE;
-import static uk.gov.ons.census.supporttool.utility.ColumnHelper.getSurveyColumns;
 
 import java.util.List;
 import java.util.UUID;
@@ -39,9 +36,7 @@ import uk.gov.ons.census.common.model.entity.UserGroupAuthorisedActivityType;
 import uk.gov.ons.census.supporttool.model.dto.ui.ActionRuleDto;
 import uk.gov.ons.census.supporttool.model.repository.ActionRuleRepository;
 import uk.gov.ons.census.supporttool.model.repository.CollectionExerciseRepository;
-import uk.gov.ons.census.supporttool.model.repository.EmailTemplateRepository;
 import uk.gov.ons.census.supporttool.model.repository.ExportFileTemplateRepository;
-import uk.gov.ons.census.supporttool.model.repository.SmsTemplateRepository;
 import uk.gov.ons.census.supporttool.security.AuthUser;
 
 @RestController
@@ -53,8 +48,6 @@ public class ActionRuleEndpoint {
   private final AuthUser authUser;
   private final CollectionExerciseRepository collectionExerciseRepository;
   private final ExportFileTemplateRepository exportFileTemplateRepository;
-  private final SmsTemplateRepository smsTemplateRepository;
-  private final EmailTemplateRepository emailTemplateRepository;
   private final JdbcTemplate jdbcTemplate;
 
   public ActionRuleEndpoint(
@@ -62,15 +55,11 @@ public class ActionRuleEndpoint {
       AuthUser authUser,
       CollectionExerciseRepository collectionExerciseRepository,
       ExportFileTemplateRepository exportFileTemplateRepository,
-      SmsTemplateRepository smsTemplateRepository,
-      EmailTemplateRepository emailTemplateRepository,
       JdbcTemplate jdbcTemplate) {
     this.actionRuleRepository = actionRuleRepository;
     this.authUser = authUser;
     this.collectionExerciseRepository = collectionExerciseRepository;
     this.exportFileTemplateRepository = exportFileTemplateRepository;
-    this.smsTemplateRepository = smsTemplateRepository;
-    this.emailTemplateRepository = emailTemplateRepository;
     this.jdbcTemplate = jdbcTemplate;
   }
 
@@ -111,18 +100,12 @@ public class ActionRuleEndpoint {
 
                   if (actionRule.getType() == ActionRuleType.EXPORT_FILE) {
                     actionRuleDTO.setPackCode(actionRule.getExportFileTemplate().getPackCode());
-                  } else if (actionRule.getType() == ActionRuleType.SMS) {
-                    actionRuleDTO.setPackCode(actionRule.getSmsTemplate().getPackCode());
-                  } else if (actionRule.getType() == ActionRuleType.EMAIL) {
-                    actionRuleDTO.setPackCode(actionRule.getEmailTemplate().getPackCode());
                   }
 
                   actionRuleDTO.setActionRuleId(actionRule.getId());
                   actionRuleDTO.setType(actionRule.getType());
                   actionRuleDTO.setDescription(actionRule.getDescription());
                   actionRuleDTO.setCollectionExerciseId(actionRule.getCollectionExercise().getId());
-                  actionRuleDTO.setPhoneNumberColumn(actionRule.getPhoneNumberColumn());
-                  actionRuleDTO.setEmailColumn(actionRule.getEmailColumn());
                   actionRuleDTO.setTriggerDateTime(actionRule.getTriggerDateTime());
                   actionRuleDTO.setHasTriggered(actionRule.isHasTriggered());
                   actionRuleDTO.setUacMetadata(actionRule.getUacMetadata());
@@ -176,63 +159,6 @@ public class ActionRuleEndpoint {
       case DEACTIVATE_UAC:
         userActivity = CREATE_DEACTIVATE_UAC_ACTION_RULE;
         break;
-      case SMS:
-        userActivity = CREATE_SMS_ACTION_RULE;
-        smsTemplate =
-            smsTemplateRepository
-                .findById(actionRuleDTO.getPackCode())
-                .orElseThrow(
-                    () -> {
-                      log.atWarn()
-                          .setMessage("Failed to insert action rule, SMS template not found")
-                          .addKeyValue("packcode", actionRuleDTO.getPackCode())
-                          .addKeyValue("httpStatus", HttpStatus.BAD_REQUEST)
-                          .addKeyValue("userEmail", createdBy)
-                          .log();
-                      return new ResponseStatusException(
-                          HttpStatus.BAD_REQUEST,
-                          "Failed to insert action rule, SMS template not found");
-                    });
-        if (!getSurveyColumns(collectionExercise.getSurvey(), true)
-            .contains(actionRuleDTO.getPhoneNumberColumn())) {
-          log.atWarn()
-              .setMessage("Failed to insert action rule, phone number column does not exist")
-              .addKeyValue("requestedColumn", actionRuleDTO.getPhoneNumberColumn())
-              .addKeyValue("httpStatus", HttpStatus.BAD_REQUEST)
-              .addKeyValue("userEmail", createdBy)
-              .addKeyValue("survey", actionRuleDTO)
-              .log();
-          throw new ResponseStatusException(
-              HttpStatus.BAD_REQUEST, "Phone number column does not exist");
-        }
-        break;
-      case EMAIL:
-        userActivity = CREATE_EMAIL_ACTION_RULE;
-        emailTemplate =
-            emailTemplateRepository
-                .findById(actionRuleDTO.getPackCode())
-                .orElseThrow(
-                    () -> {
-                      log.atWarn()
-                          .setMessage("Failed to insert action rule, email template not found")
-                          .addKeyValue("packcode", actionRuleDTO.getPackCode())
-                          .addKeyValue("httpStatus", HttpStatus.BAD_REQUEST)
-                          .addKeyValue("userEmail", createdBy)
-                          .log();
-                      return new ResponseStatusException(
-                          HttpStatus.BAD_REQUEST, "Email template not found");
-                    });
-        if (!getSurveyColumns(collectionExercise.getSurvey(), true)
-            .contains(actionRuleDTO.getEmailColumn())) {
-          log.atWarn()
-              .setMessage("Failed to insert action rule, email column does not exist")
-              .addKeyValue("requestedColumn", actionRuleDTO.getEmailColumn())
-              .addKeyValue("httpStatus", HttpStatus.BAD_REQUEST)
-              .addKeyValue("userEmail", createdBy)
-              .log();
-          throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email column does not exist");
-        }
-        break;
       case EQ_FLUSH:
         userActivity = CREATE_EQ_FLUSH_ACTION_RULE;
         break;
@@ -252,9 +178,7 @@ public class ActionRuleEndpoint {
     actionRule.setTriggerDateTime(actionRuleDTO.getTriggerDateTime());
     actionRule.setCreatedBy(createdBy);
     actionRule.setSmsTemplate(smsTemplate);
-    actionRule.setPhoneNumberColumn(actionRuleDTO.getPhoneNumberColumn());
     actionRule.setEmailTemplate(emailTemplate);
-    actionRule.setEmailColumn(actionRuleDTO.getEmailColumn());
     actionRule.setUacMetadata(actionRuleDTO.getUacMetadata());
     actionRule.setActionRuleStatus(ActionRuleStatus.SCHEDULED);
 
@@ -281,8 +205,6 @@ public class ActionRuleEndpoint {
           case OUTBOUND_TELEPHONE -> CREATE_OUTBOUND_PHONE_ACTION_RULE;
           case FACE_TO_FACE -> CREATE_FACE_TO_FACE_ACTION_RULE;
           case DEACTIVATE_UAC -> CREATE_DEACTIVATE_UAC_ACTION_RULE;
-          case SMS -> CREATE_SMS_ACTION_RULE;
-          case EMAIL -> CREATE_EMAIL_ACTION_RULE;
           case EQ_FLUSH -> CREATE_EQ_FLUSH_ACTION_RULE;
           default -> throw new IllegalStateException(
               "Unexpected value: " + actionRuleDTO.getType());

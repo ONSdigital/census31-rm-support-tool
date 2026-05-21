@@ -18,8 +18,6 @@ import TableRow from "@material-ui/core/TableRow";
 import Refusal from "./Refusal";
 import InvalidCase from "./InvalidCase";
 import PrintFulfilment from "./PrintFulfilment";
-import SampleData from "./SampleData";
-import SensitiveData from "./SensitiveData";
 import { Link } from "react-router-dom";
 import SmsFulfilment from "./SmsFulfilment";
 import EmailFulfilment from "./EmailFulfilment";
@@ -32,7 +30,6 @@ class CaseDetails extends Component {
     case: null,
     events: [],
     uacQidLinks: [],
-    sample: {},
     eventToShow: null,
     surveyName: "",
     collexName: "",
@@ -93,7 +90,6 @@ class CaseDetails extends Component {
         case: caseJson,
         uacQidLinks: caseJson.uacQidLinks,
         events: caseJson.events,
-        sample: caseJson.sample,
       });
     }
   };
@@ -208,15 +204,6 @@ class CaseDetails extends Component {
       </TableRow>
     ));
 
-    let sampleData = Object.keys(this.state.sample);
-    const sampleDataHeaders = sampleData.map((sampleHeader, index) => (
-      <TableCell key={index}>{sampleHeader}</TableCell>
-    ));
-
-    const sampleDataRows = sampleData.map((sampleHeader, index) => (
-      <TableCell key={index}>{this.state.sample[sampleHeader]}</TableCell>
-    ));
-
     return (
       <div>
         <Link to={`/search?surveyId=${this.props.surveyId}`}>
@@ -270,22 +257,6 @@ class CaseDetails extends Component {
                     {this.state.authorisedActivities.includes(
                       "CREATE_CASE_INVALID_CASE",
                     ) && <InvalidCase caseId={this.props.caseId} />}
-                    {this.state.authorisedActivities.includes(
-                      "UPDATE_SAMPLE",
-                    ) && (
-                      <SampleData
-                        caseId={this.props.caseId}
-                        surveyId={this.props.surveyId}
-                      />
-                    )}
-                    {this.state.authorisedActivities.includes(
-                      "UPDATE_SAMPLE_SENSITIVE",
-                    ) && (
-                      <SensitiveData
-                        caseId={this.props.caseId}
-                        surveyId={this.props.surveyId}
-                      />
-                    )}
                     {this.state.authorisedActivities.includes(
                       "CREATE_CASE_EXPORT_FILE_FULFILMENT",
                     ) && (
@@ -350,25 +321,7 @@ class CaseDetails extends Component {
                 <TableBody>{uacQids}</TableBody>
               </Table>
             </TableContainer>
-            {this.state.authorisedActivities.includes("VIEW_CASE_DETAILS") && (
-              <div>
-                <Typography
-                  variant="h6"
-                  color="inherit"
-                  style={{ marginTop: 20 }}
-                >
-                  Sample Data (Non-Sensitive)
-                </Typography>
-                <TableContainer component={Paper}>
-                  <Table>
-                    <TableHead>
-                      <TableRow>{sampleDataHeaders}</TableRow>
-                    </TableHead>
-                    <TableBody>{sampleDataRows}</TableBody>
-                  </Table>
-                </TableContainer>
-              </div>
-            )}
+          {/*  TODO: Update page to show all case details*/}
           </div>
         )}
         {this.state.eventToShow && (

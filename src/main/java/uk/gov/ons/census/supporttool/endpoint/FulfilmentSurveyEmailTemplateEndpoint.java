@@ -136,7 +136,7 @@ public class FulfilmentSurveyEmailTemplateEndpoint {
       return new ResponseEntity<>("Email Template already exists for survey", HttpStatus.CONFLICT);
     }
 
-    Optional<String> errorOpt = validate(survey, Set.of(emailTemplate.getTemplate()));
+    Optional<String> errorOpt = validate(Set.of(emailTemplate.getTemplate()));
     if (errorOpt.isPresent()) {
       return new ResponseEntity<>(errorOpt.get(), HttpStatus.BAD_REQUEST);
     }

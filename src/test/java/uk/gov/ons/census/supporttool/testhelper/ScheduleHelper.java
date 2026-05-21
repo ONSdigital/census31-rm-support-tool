@@ -6,9 +6,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.UUID;
 import uk.gov.ons.census.common.model.entity.*;
-import uk.gov.ons.census.common.validation.ColumnValidator;
-import uk.gov.ons.census.common.validation.MandatoryRule;
-import uk.gov.ons.census.common.validation.Rule;
 
 public class ScheduleHelper {
   public static Job getJob(String columnName, boolean sampleWithHeaderRow, JobStatus jobStatus) {
@@ -16,10 +13,6 @@ public class ScheduleHelper {
     Survey survey = new Survey();
     survey.setName("test_survey-" + UUID.randomUUID());
     survey.setSampleSeparator(',');
-    survey.setSampleValidationRules(
-        new ColumnValidator[] {
-          new ColumnValidator(columnName, false, new Rule[] {new MandatoryRule()})
-        });
     survey.setSampleWithHeaderRow(sampleWithHeaderRow);
     collectionExercise.setSurvey(survey);
     Job job = new Job();

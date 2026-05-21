@@ -133,7 +133,7 @@ public class ActionRuleSurveySmsTemplateEndpoint {
       return new ResponseEntity<>("SMS Template already exists for survey", HttpStatus.CONFLICT);
     }
 
-    Optional<String> errorOpt = validate(survey, Set.of(smsTemplate.getTemplate()));
+    Optional<String> errorOpt = validate(Set.of(smsTemplate.getTemplate()));
     if (errorOpt.isPresent()) {
       log.atWarn()
           .addKeyValue("httpStatus", HttpStatus.BAD_REQUEST)
