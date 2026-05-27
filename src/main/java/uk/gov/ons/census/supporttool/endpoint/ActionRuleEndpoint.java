@@ -206,8 +206,8 @@ public class ActionRuleEndpoint {
           case FACE_TO_FACE -> CREATE_FACE_TO_FACE_ACTION_RULE;
           case DEACTIVATE_UAC -> CREATE_DEACTIVATE_UAC_ACTION_RULE;
           case EQ_FLUSH -> CREATE_EQ_FLUSH_ACTION_RULE;
-          default -> throw new IllegalStateException(
-              "Unexpected value: " + actionRuleDTO.getType());
+          default ->
+              throw new IllegalStateException("Unexpected value: " + actionRuleDTO.getType());
         };
 
     authUser.checkUserPermission(createdBy, collectionExercise.getSurvey().getId(), userActivity);
