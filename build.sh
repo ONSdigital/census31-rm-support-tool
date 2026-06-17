@@ -1,4 +1,6 @@
 #!/bin/sh
+if [ -z "$CONTAINER_CLI" ]; then CONTAINER_CLI="docker"; fi
+
 mkdir -p src/main/resources/static
 rm -r src/main/resources/static/* || true
 rm -r ui/build/* || true
@@ -16,8 +18,9 @@ cp -r ui/build/* src/main/resources/static
 rm -r ui/build/* || true
 
 if [ "$SKIP_TESTS" = true ] ; then
-  mvn clean install -Dmaven.test.skip=true -Dexec.skip=true -Djacoco.skip=true
+  CONTAINER_CLI=$CONTAINER_CLI mvn clean install -Dmaven.test.skip=true -Dexec.skip=true -Djacoco.skip=true
 else
-  mvn clean install
+  CONTAINER_CLI=$CONTAINER_CLI mvn clean install
 fi
-docker build . -t census-rm-support-tool:latest
+
+$CONTAINER_CLI build --platform linux/amd64 . -t census-rm-support-tool:latest

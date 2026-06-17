@@ -1,13 +1,16 @@
+# Set the container runtime based on architecture, default to docker for amd64 and podman for arm64
+DOCKER ?= $(shell if [ "$$(uname -m)" = "arm64" ]; then echo podman; else echo docker; fi)
+
 build:
-	./build.sh
+	CONTAINER_CLI=$(DOCKER) ./build.sh
 
 build-no-test:
-	SKIP_TESTS=true ./build.sh
+	CONTAINER_CLI=$(DOCKER) SKIP_TESTS=true ./build.sh
 
 test: test-mvn test-ui
 
 test-mvn:
-	mvn clean verify jacoco:report
+	CONTAINER_CLI=$(DOCKER) mvn clean verify jacoco:report
 
 test-ui:
 	cd ui && npm install && npx eslint . && npm test -- --watchAll=false
@@ -44,13 +47,13 @@ docker-build:
 	SKIP_TESTS=true ./build.sh
 
 megalint:  ## Run the mega-linter.
-	docker run --platform linux/amd64 --rm \
+	$(DOCKER) run --platform linux/amd64 --rm \
 		-v /var/run/docker.sock:/var/run/docker.sock:rw \
 		-v $(shell pwd):/tmp/lint:rw \
 		oxsecurity/megalinter-documentation:v8
 
 megalint-fix:  ## Run the mega-linter and attempt to auto fix any issues.
-	docker run --platform linux/amd64 --rm \
+	$(DOCKER) run --platform linux/amd64 --rm \
 		-v /var/run/docker.sock:/var/run/docker.sock:rw \
 		-v $(shell pwd):/tmp/lint:rw \
 		-e APPLY_FIXES=all \
