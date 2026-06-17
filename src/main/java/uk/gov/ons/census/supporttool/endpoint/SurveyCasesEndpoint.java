@@ -55,24 +55,26 @@ public class SurveyCasesEndpoint {
 
   @GetMapping(value = "/{surveyId}")
   @ResponseBody
-  public List<CaseSearchResult> searchCasesBySampleData(
+  public List<CaseSearchResult> searchCasesByColumnNameTerm(
       @Value("#{request.getAttribute('userEmail')}") String userEmail,
       @PathVariable(value = "surveyId") UUID surveyId,
       @RequestParam(value = "searchTerm") String searchTerm,
       @RequestParam(value = "collexId", required = false) Optional<UUID> collexId,
       @RequestParam(value = "invalid", required = false) Optional<Boolean> caseInvalid,
-      @RequestParam(value = "refusal", required = false)
-          Optional<UIRefusalTypeDTO> refusalReceived) {
+      @RequestParam(value = "refusal", required = false) Optional<UIRefusalTypeDTO> refusalReceived,
+      @RequestParam(value = "nameTerm", required = false, defaultValue = "postcode")
+          String nameTerm) {
 
     checkSurveySearchCasesPermission(userEmail, surveyId);
+    checkCaseSearchNameTerm(nameTerm);
 
     String escapedSearchTerm = escapeSqlLikeSpecialCharacters(searchTerm);
     String likeSearchTerm = String.format("%%%s%%", escapedSearchTerm);
     StringBuilder queryStringBuilder = new StringBuilder(searchCasesInSurveyPartialQuery);
     queryStringBuilder
-        .append(" AND EXISTS (SELECT * FROM jsonb_each_text(c.sample) AS x(ky, val)")
-        .append(
-            " WHERE LOWER(REPLACE(x.val, ' ', '')) LIKE LOWER(REPLACE(:likeSearchTerm, ' ', '')) ESCAPE '\\')");
+        .append(" AND ")
+        .append(nameTerm)
+        .append(" LIKE LOWER(REPLACE(:likeSearchTerm, ' ', '')) ESCAPE '\\' ");
 
     Map<String, Object> namedParameters = new HashMap();
     namedParameters.put("surveyId", surveyId);
@@ -156,5 +158,28 @@ public class SurveyCasesEndpoint {
 
   private String escapeSqlLikeSpecialCharacters(String stringToEscape) {
     return stringToEscape.replace("%", "\\%").replace("_", "\\_");
+  }
+
+  private void checkCaseSearchNameTerm(String nameTerm) {
+    // Allowed column names
+    List<String> allowedNameTerms =
+        List.of(
+            "postcode",
+            "address_line1",
+            "address_line2",
+            "address_line3",
+            "town_name",
+            "organisation_name",
+            "case_ref",
+            "apb_code",
+            "case_type",
+            "uprn",
+            "region");
+
+    // Validate
+    if (!allowedNameTerms.contains(nameTerm)) {
+      throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST, "Invalid nameTerm. Allowed values: " + allowedNameTerms);
+    }
   }
 }
