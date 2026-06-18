@@ -36,7 +36,7 @@ public class SurveyCasesEndpoint {
   private final AuthUser authUser;
 
   private static final String searchCasesPartialQuery =
-      "SELECT c.id, c.case_ref, e.name collex_name";
+      "SELECT c.id, c.case_ref, e.name collex_name, c.address_line1, c.case_type, postcode, uprn, address_type";
   private static final String searchCasesInSurveyPartialQuery =
       searchCasesPartialQuery
           + " FROM cases.cases c, cases.collection_exercise e WHERE c.collection_exercise_id = e.id"
@@ -72,13 +72,14 @@ public class SurveyCasesEndpoint {
     String likeSearchTerm = String.format("%%%s%%", escapedSearchTerm);
     StringBuilder queryStringBuilder = new StringBuilder(searchCasesInSurveyPartialQuery);
     queryStringBuilder
-        .append(" AND ")
+        .append(" AND LOWER(REPLACE(c.")
         .append(nameTerm)
+        .append(", ' ', '')) ")
         .append(" LIKE LOWER(REPLACE(:likeSearchTerm, ' ', '')) ESCAPE '\\' ");
 
     Map<String, Object> namedParameters = new HashMap();
     namedParameters.put("surveyId", surveyId);
-    namedParameters.put("likeSearchTerm", likeSearchTerm);
+    namedParameters.put("likeSearchTerm", likeSearchTerm.toLowerCase());
 
     if (collexId.isPresent()) {
       queryStringBuilder.append(" AND e.id = :collexId");

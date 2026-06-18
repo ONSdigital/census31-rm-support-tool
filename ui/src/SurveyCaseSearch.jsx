@@ -29,7 +29,6 @@ class SurveyCaseSearch extends Component {
 
   getAuthorisedBackendData = async () => {
     const authorisedActivities = await this.getAuthorisedActivities(); // Only need to do this once; don't refresh it repeatedly as it changes infrequently
-    this.getSampleColumns(authorisedActivities);
     this.getCollectionExercises(authorisedActivities);
   };
 
@@ -113,6 +112,26 @@ class SurveyCaseSearch extends Component {
       <TableCell key={1}>{caze.collectionExerciseName}</TableCell>,
     );
 
+    caseCells.push(
+        <TableCell key={2}>{caze.addressLine1}</TableCell>,
+    );
+
+    caseCells.push(
+        <TableCell key={3}>{caze.postcode}</TableCell>,
+    );
+
+    caseCells.push(
+        <TableCell key={4}>{caze.caseType}</TableCell>,
+    );
+
+    caseCells.push(
+        <TableCell key={5}>{caze.uprn}</TableCell>,
+    );
+
+    caseCells.push(
+        <TableCell key={6}>{caze.addressType}</TableCell>,
+    );
+
     return caseCells;
   };
 
@@ -121,6 +140,16 @@ class SurveyCaseSearch extends Component {
     tableHeaderRows.push(<TableCell key={0}>Case Ref</TableCell>);
 
     tableHeaderRows.push(<TableCell key={1}>Collection Exercise</TableCell>);
+
+    tableHeaderRows.push(<TableCell key={2}>Address Line 1</TableCell>);
+
+    tableHeaderRows.push(<TableCell key={3}>Post Code</TableCell>);
+
+    tableHeaderRows.push(<TableCell key={4}>Case Type</TableCell>);
+
+    tableHeaderRows.push(<TableCell key={5}>UPRN</TableCell>);
+
+    tableHeaderRows.push(<TableCell key={6}>Address Type</TableCell>);
 
     return tableHeaderRows;
   }

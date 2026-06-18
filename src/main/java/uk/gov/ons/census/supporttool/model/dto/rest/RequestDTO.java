@@ -1,8 +1,7 @@
 package uk.gov.ons.census.supporttool.model.dto.rest;
 
-import lombok.Data;
-
-@Data
+@SuppressWarnings("SameNameButDifferent")
+@lombok.Data
 public class RequestDTO {
   private RequestHeaderDTO header;
   private RequestPayloadDTO payload;

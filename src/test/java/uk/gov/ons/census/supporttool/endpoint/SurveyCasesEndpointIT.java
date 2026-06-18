@@ -106,14 +106,17 @@ class SurveyCasesEndpointIT {
     verify(jdbc).query(queryCaptor.capture(), paramsCaptor.capture(), eq(mapper));
 
     String query = queryCaptor.getValue();
+
     Map<String, Object> params = paramsCaptor.getValue();
 
     assertTrue(query.contains("FROM cases.cases c"));
     assertTrue(
-        query.contains("AND postcode LIKE LOWER(REPLACE(:likeSearchTerm, ' ', '')) ESCAPE '\\' "));
+        query.contains(
+            "AND LOWER(REPLACE(c.postcode, ' ', ''))  LIKE LOWER(REPLACE(:likeSearchTerm, ' ', ''))"));
+
     assertTrue(query.contains("LIMIT 100"));
 
-    assertEquals("%AB12%", params.get("likeSearchTerm"));
+    assertEquals("%ab12%", params.get("likeSearchTerm"));
     assertEquals(SURVEY_ID, params.get("surveyId"));
   }
 

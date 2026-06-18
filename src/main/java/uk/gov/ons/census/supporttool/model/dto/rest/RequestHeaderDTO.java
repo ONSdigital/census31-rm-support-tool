@@ -1,9 +1,9 @@
 package uk.gov.ons.census.supporttool.model.dto.rest;
 
 import java.util.UUID;
-import lombok.Data;
 
-@Data
+@SuppressWarnings("SameNameButDifferent")
+@lombok.Data
 public class RequestHeaderDTO {
   private String source;
   private String channel;

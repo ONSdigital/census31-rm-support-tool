@@ -1,9 +1,9 @@
 package uk.gov.ons.census.supporttool.testhelper;
 
 import java.util.UUID;
-import lombok.Data;
 
-@Data
+@SuppressWarnings("SameNameButDifferent")
+@lombok.Data
 public class BundleOfUsefulTestStuff {
   private UUID surveyId;
   private UUID collexId;
