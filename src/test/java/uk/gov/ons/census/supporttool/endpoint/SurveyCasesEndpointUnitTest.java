@@ -17,7 +17,7 @@ import uk.gov.ons.census.supporttool.model.repository.SurveyRepository;
 import uk.gov.ons.census.supporttool.security.AuthUser;
 import uk.gov.ons.census.supporttool.utility.CaseSearchResultsMapper;
 
-class SurveyCasesEndpointIT {
+class SurveyCasesEndpointUnitTest {
 
   private SurveyRepository surveyRepository;
   private NamedParameterJdbcTemplate jdbc;
