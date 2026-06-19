@@ -36,7 +36,7 @@ public class SurveyCasesEndpoint {
   private final AuthUser authUser;
 
   private static final String searchCasesPartialQuery =
-      "SELECT c.id, c.case_ref, e.name collex_name, c.address_line1, c.case_type, postcode, uprn, address_type";
+      "SELECT c.id, c.case_ref, e.name collex_name, c.address_line1, c.case_type, c.postcode, c.uprn, c.address_type";
   private static final String searchCasesInSurveyPartialQuery =
       searchCasesPartialQuery
           + " FROM cases.cases c, cases.collection_exercise e WHERE c.collection_exercise_id = e.id"
