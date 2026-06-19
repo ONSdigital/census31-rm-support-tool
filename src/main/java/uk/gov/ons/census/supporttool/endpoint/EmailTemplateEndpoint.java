@@ -51,6 +51,7 @@ public class EmailTemplateEndpoint {
               emailTemplateDto.setDescription(emailTemplate.getDescription());
               emailTemplateDto.setMetadata(emailTemplate.getMetadata());
               emailTemplateDto.setNotifyServiceRef(emailTemplate.getNotifyServiceRef());
+              emailTemplateDto.setQuestionnaireType(emailTemplate.getQuestionnaireType());
               return emailTemplateDto;
             })
         .collect(Collectors.toList());
@@ -72,6 +73,7 @@ public class EmailTemplateEndpoint {
     emailTemplate.setDescription(emailTemplateDto.getDescription());
     emailTemplate.setMetadata(emailTemplateDto.getMetadata());
     emailTemplate.setNotifyServiceRef(emailTemplateDto.getNotifyServiceRef());
+    emailTemplate.setQuestionnaireType(emailTemplateDto.getQuestionnaireType());
 
     emailTemplateRepository.saveAndFlush(emailTemplate);
 

@@ -323,6 +323,7 @@ class AllEndpointsIT {
           exportFileTemplateDto.setPackCode("TEST_" + UUID.randomUUID());
           exportFileTemplateDto.setDescription("Test description");
           exportFileTemplateDto.setMetadata(Map.of("foo", "bar"));
+          exportFileTemplateDto.setQuestionnaireType(1);
           return exportFileTemplateDto;
         });
   }
@@ -344,6 +345,7 @@ class AllEndpointsIT {
           smsTemplateDto.setDescription("Test description");
           smsTemplateDto.setMetadata(Map.of("foo", "bar"));
           smsTemplateDto.setNotifyServiceRef("test_service");
+          smsTemplateDto.setQuestionnaireType(1);
 
           return smsTemplateDto;
         });
@@ -366,6 +368,7 @@ class AllEndpointsIT {
           emailTemplateDto.setDescription("Test description");
           emailTemplateDto.setMetadata(Map.of("foo", "bar"));
           emailTemplateDto.setNotifyServiceRef("test_service");
+          emailTemplateDto.setQuestionnaireType(1);
           return emailTemplateDto;
         });
   }

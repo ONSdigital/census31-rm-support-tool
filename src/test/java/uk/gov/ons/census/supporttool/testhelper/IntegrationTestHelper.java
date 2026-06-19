@@ -267,6 +267,7 @@ public class IntegrationTestHelper {
     exportFileTemplate.setTemplate(new String[] {"UPRN", "ADDRESS_LINE1"});
     exportFileTemplate.setExportFileDestination("test_supplier");
     exportFileTemplate.setDescription("Test description");
+    exportFileTemplate.setQuestionnaireType(1);
     exportFileTemplate = exportFileTemplateRepository.saveAndFlush(exportFileTemplate);
 
     SmsTemplate smsTemplate = new SmsTemplate();
@@ -275,6 +276,7 @@ public class IntegrationTestHelper {
     smsTemplate.setNotifyTemplateId(UUID.randomUUID());
     smsTemplate.setDescription("Test description");
     smsTemplate.setNotifyServiceRef("test_service");
+    smsTemplate.setQuestionnaireType(1);
     smsTemplate = smsTemplateRepository.saveAndFlush(smsTemplate);
 
     EmailTemplate emailTemplate = new EmailTemplate();
@@ -283,6 +285,7 @@ public class IntegrationTestHelper {
     emailTemplate.setNotifyTemplateId(UUID.randomUUID());
     emailTemplate.setDescription("Test description");
     emailTemplate.setNotifyServiceRef("test_service");
+    emailTemplate.setQuestionnaireType(1);
     emailTemplate = emailTemplateRepository.saveAndFlush(emailTemplate);
 
     User user = setupDummyUser(UUID.randomUUID());

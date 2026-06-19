@@ -12,6 +12,7 @@ public class ExportFileTemplateDto {
   private String exportFileDestination;
   private String description;
   private Object metadata;
+  private Integer questionnaireType;
 
   public ExportFileTemplateDto(ExportFileTemplate exportFileTemplate) {
     packCode = exportFileTemplate.getPackCode();
@@ -19,5 +20,6 @@ public class ExportFileTemplateDto {
     exportFileDestination = exportFileTemplate.getExportFileDestination();
     description = exportFileTemplate.getDescription();
     metadata = exportFileTemplate.getMetadata();
+    questionnaireType = exportFileTemplate.getQuestionnaireType();
   }
 }
