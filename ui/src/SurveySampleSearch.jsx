@@ -74,7 +74,7 @@ class SurveySampleSearch extends Component {
     this.props.onSearchExecuteAndPopulateList(
       searchUrl,
       this.state.searchTerm,
-      "sample data containing",
+      "Postcode matching",
     );
   };
 
@@ -157,7 +157,7 @@ class SurveySampleSearch extends Component {
             required
             style={{ minWidth: SEARCH_FIELD_WIDTH }}
             error={this.state.searchTermFailedValidation}
-            label="Search All Sample Data"
+            label="Search By Postcode"
             onChange={this.onSearchChange}
             value={this.state.searchTerm}
           />
@@ -166,7 +166,7 @@ class SurveySampleSearch extends Component {
             variant="contained"
             style={{ margin: 10, minWidth: SEARCH_BUTTON_WIDTH }}
           >
-            Search Sample Data
+            Search By Post Code
           </Button>
         </div>
         <div id="searchSampleFiltersDiv">

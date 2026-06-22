@@ -2,9 +2,9 @@ package uk.gov.ons.census.supporttool.model.dto.rest;
 
 import java.util.Map;
 import java.util.UUID;
-import lombok.Data;
 
-@Data
+@SuppressWarnings("SameNameButDifferent")
+@lombok.Data
 public class SmsFulfilment {
   private UUID caseId;
   private String phoneNumber;

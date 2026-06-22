@@ -201,6 +201,14 @@ class AllEndpointsIT {
   }
 
   @Test
+  void testCaseSearchTermEndpoints() {
+    integrationTestHelper.testGet(
+        port,
+        UserGroupAuthorisedActivityType.SEARCH_CASES,
+        (bundle) -> String.format("surveyCases/%s?searchTerm=XX0", bundle.getSurveyId()));
+  }
+
+  @Test
   void testCollectionExerciseEndpoints() {
     integrationTestHelper.testGet(
         port,

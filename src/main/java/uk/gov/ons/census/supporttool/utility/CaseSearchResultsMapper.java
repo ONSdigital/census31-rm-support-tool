@@ -20,6 +20,11 @@ public class CaseSearchResultsMapper implements RowMapper<CaseSearchResult> {
       caseContainerDto.setId(resultSet.getObject("id", UUID.class));
       caseContainerDto.setCaseRef(resultSet.getString("case_ref"));
       caseContainerDto.setCollectionExerciseName(resultSet.getString("collex_name"));
+      caseContainerDto.setAddressLine1(resultSet.getString("address_line1"));
+      caseContainerDto.setAddressType(resultSet.getString("address_type"));
+      caseContainerDto.setCaseType(resultSet.getString("case_type"));
+      caseContainerDto.setUprn(resultSet.getString("uprn"));
+      caseContainerDto.setPostcode(resultSet.getString("postcode"));
     } catch (SQLException e) {
       log.atError().setMessage("Error mapping case search results").log();
       throw new RuntimeException("Error mapping case search results", e);
