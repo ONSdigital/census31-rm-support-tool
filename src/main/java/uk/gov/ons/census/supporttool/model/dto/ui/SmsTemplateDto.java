@@ -14,6 +14,7 @@ public class SmsTemplateDto {
   private String description;
   private Object metadata;
   private String notifyServiceRef;
+  private Integer questionnaireType;
 
   public SmsTemplateDto(SmsTemplate smsTemplate) {
     packCode = smsTemplate.getPackCode();
@@ -22,5 +23,6 @@ public class SmsTemplateDto {
     description = smsTemplate.getDescription();
     metadata = smsTemplate.getMetadata();
     notifyServiceRef = smsTemplate.getNotifyServiceRef();
+    questionnaireType = smsTemplate.getQuestionnaireType();
   }
 }

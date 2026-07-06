@@ -52,6 +52,7 @@ public class ExportFileTemplateEndpoint {
               exportFileTemplateDto.setPackCode(exportFileTemplate.getPackCode());
               exportFileTemplateDto.setDescription(exportFileTemplate.getDescription());
               exportFileTemplateDto.setMetadata(exportFileTemplate.getMetadata());
+              exportFileTemplateDto.setQuestionnaireType(exportFileTemplate.getQuestionnaireType());
               return exportFileTemplateDto;
             })
         .collect(Collectors.toList());
@@ -90,6 +91,7 @@ public class ExportFileTemplateEndpoint {
     exportFileTemplate.setPackCode(exportFileTemplateDto.getPackCode());
     exportFileTemplate.setDescription(exportFileTemplateDto.getDescription());
     exportFileTemplate.setMetadata(exportFileTemplateDto.getMetadata());
+    exportFileTemplate.setQuestionnaireType(exportFileTemplateDto.getQuestionnaireType());
 
     exportFileTemplateRepository.saveAndFlush(exportFileTemplate);
 

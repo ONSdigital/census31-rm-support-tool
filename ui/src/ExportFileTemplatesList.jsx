@@ -31,11 +31,15 @@ class ExportFileTemplateList extends Component {
     description: "",
     packCode: "",
     template: "",
+    newTemplateMetadata: "",
+    questionnaireType: "",
     descriptionValidationError: false,
     packCodeValidationError: false,
     templateValidationErrorMessage: "",
     templateValidationError: false,
     newTemplateMetadataValidationError: false,
+    questionnaireTypeValidationError: false,
+    questionnaireTypeValidationMessage: "",
   };
 
   componentDidMount() {
@@ -84,12 +88,15 @@ class ExportFileTemplateList extends Component {
       packCode: "",
       template: "",
       newTemplateMetadata: "",
+      questionnaireType: "",
       exportFileDestinationValidationError: false,
       descriptionValidationError: false,
       packCodeValidationError: false,
       templateValidationErrorMessage: "",
       templateValidationError: false,
       newTemplateMetadataValidationError: false,
+      questionnaireTypeValidationError: false,
+      questionnaireTypeValidationMessage: "",
       createExportFileTemplatePackCodeError: "",
       createExportFileTemplateDialogDisplayed: true,
     });
@@ -121,9 +128,12 @@ class ExportFileTemplateList extends Component {
     this.setState({
       createExportFileTemplatePackCodeError: "",
       packCodeValidationError: false,
+      questionnaireTypeValidationError: false,
+      questionnaireTypeValidationMessage: "",
     });
 
-    var failedValidation = false;
+    let failedValidation = false;
+    let parsedTemplate = null;
 
     if (!this.state.exportFileDestination.trim()) {
       this.setState({ exportFileDestinationValidationError: true });
@@ -160,14 +170,14 @@ class ExportFileTemplateList extends Component {
       failedValidation = true;
     } else {
       try {
-        const parsedJson = JSON.parse(this.state.template);
-        if (!Array.isArray(parsedJson) || parsedJson.length === 0) {
+        parsedTemplate = JSON.parse(this.state.template);
+        if (!Array.isArray(parsedTemplate) || parsedTemplate.length === 0) {
           this.setState({ templateValidationError: true });
           failedValidation = true;
         }
 
         const hasDuplicateTemplateColumns =
-          new Set(parsedJson).size !== parsedJson.length;
+          new Set(parsedTemplate).size !== parsedTemplate.length;
         if (hasDuplicateTemplateColumns) {
           this.setState({
             templateValidationError: true,
@@ -180,6 +190,45 @@ class ExportFileTemplateList extends Component {
         this.setState({ templateValidationError: true });
         failedValidation = true;
       }
+    }
+
+    const templateColumns = Array.isArray(parsedTemplate) ? parsedTemplate : [];
+
+    const hasQuestionnaireTypeTemplateColumns = templateColumns.some(
+      (templateColumn) =>
+        typeof templateColumn === "string" &&
+        (templateColumn.includes("__uac__") ||
+          templateColumn.includes("__qid__")),
+    );
+
+    const questionnaireTypeInput = this.state.questionnaireType.trim();
+    let questionnaireType = null;
+
+    if (questionnaireTypeInput) {
+      const parsedQuestionnaireType = Number(questionnaireTypeInput);
+      const questionnaireTypeIsInteger = Number.isInteger(parsedQuestionnaireType);
+      const questionnaireTypeInRange =
+        parsedQuestionnaireType >= 1 && parsedQuestionnaireType <= 99;
+
+      if (!questionnaireTypeIsInteger || !questionnaireTypeInRange) {
+        this.setState({
+          questionnaireTypeValidationError: true,
+          questionnaireTypeValidationMessage:
+            "Questionnaire Type must be an integer between 1 and 99 inclusive",
+        });
+        failedValidation = true;
+      } else {
+        questionnaireType = parsedQuestionnaireType;
+      }
+    }
+
+    if (hasQuestionnaireTypeTemplateColumns && !questionnaireTypeInput) {
+      this.setState({
+        questionnaireTypeValidationError: true,
+        questionnaireTypeValidationMessage:
+          "Questionnaire Type is required when template contains __uac__ or __qid__",
+      });
+      failedValidation = true;
     }
 
     let metadata = null;
@@ -206,8 +255,9 @@ class ExportFileTemplateList extends Component {
       description: this.state.description,
       packCode: this.state.packCode,
       exportFileDestination: this.state.exportFileDestination,
-      template: JSON.parse(this.state.template),
+      template: parsedTemplate,
       metadata: metadata,
+      questionnaireType: questionnaireType,
     };
 
     const response = await fetch("/api/exportFileTemplates", {
@@ -263,6 +313,14 @@ class ExportFileTemplateList extends Component {
     });
   };
 
+  onQuestionnaireTypeChange = (event) => {
+    this.setState({
+      questionnaireType: event.target.value,
+      questionnaireTypeValidationError: false,
+      questionnaireTypeValidationMessage: "",
+    });
+  };
+
   render() {
     const exportFileTemplateRows = this.state.exportFileTemplates.map(
       (exportFileTemplate) => (
@@ -278,6 +336,9 @@ class ExportFileTemplateList extends Component {
           </TableCell>
           <TableCell component="th" scope="row">
             {JSON.stringify(exportFileTemplate.template)}
+          </TableCell>
+          <TableCell component="th" scope="row">
+            {exportFileTemplate.questionnaireType}
           </TableCell>
           <TableCell component="th" scope="row">
             {JSON.stringify(exportFileTemplate.metadata)}
@@ -310,6 +371,7 @@ class ExportFileTemplateList extends Component {
                     <TableCell>Description</TableCell>
                     <TableCell>Export File Destination</TableCell>
                     <TableCell>Template</TableCell>
+                    <TableCell>Questionnaire Type</TableCell>
                     <TableCell>Metadata</TableCell>
                   </TableRow>
                 </TableHead>
@@ -393,6 +455,18 @@ class ExportFileTemplateList extends Component {
                   onChange={this.onNewTemplateMetadataChange}
                   value={this.state.newTemplateMetadata}
                   id="metadataTextField"
+                />
+                <TextField
+                  fullWidth={true}
+                  style={{ marginTop: 10 }}
+                  error={this.state.questionnaireTypeValidationError}
+                  label="Questionnaire Type"
+                  type="number"
+                  inputProps={{ min: 1, max: 99, step: 1 }}
+                  onChange={this.onQuestionnaireTypeChange}
+                  value={this.state.questionnaireType}
+                  helperText={this.state.questionnaireTypeValidationMessage}
+                  id="questionnaireTypeTextField"
                 />
               </div>
               <div style={{ marginTop: 10 }}>

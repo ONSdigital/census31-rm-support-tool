@@ -14,6 +14,7 @@ public class EmailTemplateDto {
   private String description;
   private Object metadata;
   private String notifyServiceRef;
+  private Integer questionnaireType;
 
   public EmailTemplateDto(EmailTemplate emailTemplate) {
     packCode = emailTemplate.getPackCode();
@@ -22,5 +23,6 @@ public class EmailTemplateDto {
     description = emailTemplate.getDescription();
     metadata = emailTemplate.getMetadata();
     notifyServiceRef = emailTemplate.getNotifyServiceRef();
+    questionnaireType = emailTemplate.getQuestionnaireType();
   }
 }

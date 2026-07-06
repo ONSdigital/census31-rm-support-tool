@@ -50,6 +50,7 @@ public class SmsTemplateEndpoint {
               smsTemplateDto.setDescription(smsTemplate.getDescription());
               smsTemplateDto.setMetadata(smsTemplate.getMetadata());
               smsTemplateDto.setNotifyServiceRef(smsTemplate.getNotifyServiceRef());
+              smsTemplateDto.setQuestionnaireType(smsTemplate.getQuestionnaireType());
               return smsTemplateDto;
             })
         .collect(Collectors.toList());
@@ -71,6 +72,7 @@ public class SmsTemplateEndpoint {
     smsTemplate.setDescription(smsTemplateDto.getDescription());
     smsTemplate.setMetadata(smsTemplateDto.getMetadata());
     smsTemplate.setNotifyServiceRef(smsTemplateDto.getNotifyServiceRef());
+    smsTemplate.setQuestionnaireType(smsTemplateDto.getQuestionnaireType());
 
     smsTemplateRepository.saveAndFlush(smsTemplate);
 
