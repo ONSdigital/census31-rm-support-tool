@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
+import uk.gov.ons.census.common.model.entity.EventType;
 import uk.gov.ons.census.supporttool.model.dto.messaging.EventHeaderDTO;
 
 public class EventHelperTest {
@@ -25,7 +26,8 @@ public class EventHelperTest {
   @Test
   public void testCreateEventDTOWithEventTypeChannelAndSource() {
     EventHeaderDTO eventHeader =
-        EventHelper.createEventDTO("Test topic", "CHANNEL", "SOURCE", "Test_user");
+        EventHelper.createEventDTO(
+            "Test topic", "CHANNEL", "SOURCE", "Test_user", EventType.CASE_UPDATE);
 
     assertThat(eventHeader.getChannel()).isEqualTo("CHANNEL");
     assertThat(eventHeader.getSource()).isEqualTo("SOURCE");

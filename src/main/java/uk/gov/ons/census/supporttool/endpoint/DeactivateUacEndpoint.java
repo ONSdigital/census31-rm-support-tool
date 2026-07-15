@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+import uk.gov.ons.census.common.model.entity.EventType;
 import uk.gov.ons.census.common.model.entity.UacQidLink;
 import uk.gov.ons.census.supporttool.model.dto.messaging.DeactivateUacDTO;
 import uk.gov.ons.census.supporttool.model.dto.messaging.EventDTO;
@@ -69,7 +70,8 @@ public class DeactivateUacEndpoint {
 
     EventDTO event = new EventDTO();
 
-    EventHeaderDTO header = EventHelper.createEventDTO(deactivateUacTopic, userEmail);
+    EventHeaderDTO header =
+        EventHelper.createEventDTO(deactivateUacTopic, userEmail, EventType.DEACTIVATE_UAC);
     event.setHeader(header);
 
     PayloadDTO payload = new PayloadDTO();

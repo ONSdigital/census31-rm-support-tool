@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.ons.census.common.model.entity.Case;
+import uk.gov.ons.census.common.model.entity.EventType;
 import uk.gov.ons.census.supporttool.model.dto.messaging.EventDTO;
 import uk.gov.ons.census.supporttool.model.dto.messaging.EventHeaderDTO;
 import uk.gov.ons.census.supporttool.model.dto.messaging.InvalidCaseDTO;
@@ -62,7 +63,8 @@ public class CaseService {
 
     EventDTO event = new EventDTO();
 
-    EventHeaderDTO eventHeader = EventHelper.createEventDTO(refusalEventTopic, userEmail);
+    EventHeaderDTO eventHeader =
+        EventHelper.createEventDTO(refusalEventTopic, userEmail, EventType.REFUSAL);
     event.setHeader(eventHeader);
     event.setPayload(payloadDTO);
 
@@ -81,7 +83,8 @@ public class CaseService {
 
     EventDTO event = new EventDTO();
 
-    EventHeaderDTO eventHeader = EventHelper.createEventDTO(invalidCaseEventTopic, userEmail);
+    EventHeaderDTO eventHeader =
+        EventHelper.createEventDTO(invalidCaseEventTopic, userEmail, EventType.INVALID_CASE);
     event.setHeader(eventHeader);
     event.setPayload(payloadDTO);
 
@@ -103,7 +106,8 @@ public class CaseService {
 
     EventDTO event = new EventDTO();
 
-    EventHeaderDTO eventHeader = EventHelper.createEventDTO(printFulfilmentTopic, userEmail);
+    EventHeaderDTO eventHeader =
+        EventHelper.createEventDTO(printFulfilmentTopic, userEmail, EventType.PRINT_FULFILMENT);
     event.setHeader(eventHeader);
     event.setPayload(payloadDTO);
 
