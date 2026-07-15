@@ -33,6 +33,7 @@ class ExportFileTemplateList extends Component {
     template: "",
     newTemplateMetadata: "",
     questionnaireType: "",
+    welshQuestionnaireType: "",
     descriptionValidationError: false,
     packCodeValidationError: false,
     templateValidationErrorMessage: "",
@@ -89,6 +90,7 @@ class ExportFileTemplateList extends Component {
       template: "",
       newTemplateMetadata: "",
       questionnaireType: "",
+      welshQuestionnaireType: "",
       exportFileDestinationValidationError: false,
       descriptionValidationError: false,
       packCodeValidationError: false,
@@ -129,7 +131,9 @@ class ExportFileTemplateList extends Component {
       createExportFileTemplatePackCodeError: "",
       packCodeValidationError: false,
       questionnaireTypeValidationError: false,
+      welshQuestionnaireTypeValidationError: false,
       questionnaireTypeValidationMessage: "",
+      welshQuestionnaireTypeValidationMessage: "",
     });
 
     let failedValidation = false;
@@ -201,8 +205,18 @@ class ExportFileTemplateList extends Component {
           templateColumn.includes("__qid__")),
     );
 
+    const hasWelshQuestionnaireTypeTemplateColumns = templateColumns.some(
+      (templateColumn) =>
+        typeof templateColumn === "string" &&
+        (templateColumn.includes("__welsh_uac__") ||
+          templateColumn.includes("__welsh_qid__")),
+    );
+
     const questionnaireTypeInput = this.state.questionnaireType.trim();
     let questionnaireType = null;
+
+    const welshQuestionnaireTypeInput = this.state.welshQuestionnaireType.trim();
+    let welshQuestionnaireType = null;
 
     if (questionnaireTypeInput) {
       const parsedQuestionnaireType = Number(questionnaireTypeInput);
@@ -222,11 +236,40 @@ class ExportFileTemplateList extends Component {
       }
     }
 
+
+    if (welshQuestionnaireTypeInput) {
+      const parsedWelshQuestionnaireType = Number(welshQuestionnaireTypeInput);
+      const welshQuestionnaireTypeIsInteger = Number.isInteger(parsedWelshQuestionnaireType);
+      const welshQuestionnaireTypeInRange =
+        parsedWelshQuestionnaireType >= 1 && parsedWelshQuestionnaireType <= 99;
+
+      if (!welshQuestionnaireTypeIsInteger || !welshQuestionnaireTypeInRange) {
+        this.setState({
+          welshQuestionnaireTypeValidationError: true,
+          welshQuestionnaireTypeValidationMessage:
+            "Welsh Questionnaire Type must be an integer between 1 and 99 inclusive",
+        });
+        failedValidation = true;
+      } else {
+        welshQuestionnaireType = parsedWelshQuestionnaireType;
+      }
+    }
+
+
     if (hasQuestionnaireTypeTemplateColumns && !questionnaireTypeInput) {
       this.setState({
         questionnaireTypeValidationError: true,
         questionnaireTypeValidationMessage:
           "Questionnaire Type is required when template contains __uac__ or __qid__",
+      });
+      failedValidation = true;
+    }
+
+    if (hasWelshQuestionnaireTypeTemplateColumns && !welshQuestionnaireTypeInput) {
+      this.setState({
+        welshQuestionnaireTypeValidationError: true,
+        welshQuestionnaireTypeValidationMessage:
+          "Welsh Questionnaire Type is required when template contains __welsh_uac__ or __welsh_qid__",
       });
       failedValidation = true;
     }
@@ -258,6 +301,7 @@ class ExportFileTemplateList extends Component {
       template: parsedTemplate,
       metadata: metadata,
       questionnaireType: questionnaireType,
+      welshQuestionnaireType: welshQuestionnaireType,
     };
 
     const response = await fetch("/api/exportFileTemplates", {
@@ -321,6 +365,14 @@ class ExportFileTemplateList extends Component {
     });
   };
 
+  onWelshQuestionnaireTypeChange = (event) => {
+    this.setState({
+      welshQuestionnaireType: event.target.value,
+      welshQuestionnaireTypeValidationError: false,
+      welshQuestionnaireTypeValidationMessage: "",
+    });
+  };
+
   render() {
     const exportFileTemplateRows = this.state.exportFileTemplates.map(
       (exportFileTemplate) => (
@@ -339,6 +391,9 @@ class ExportFileTemplateList extends Component {
           </TableCell>
           <TableCell component="th" scope="row">
             {exportFileTemplate.questionnaireType}
+          </TableCell>
+          <TableCell component="th" scope="row">
+            {exportFileTemplate.welshQuestionnaireType}
           </TableCell>
           <TableCell component="th" scope="row">
             {JSON.stringify(exportFileTemplate.metadata)}
@@ -372,6 +427,7 @@ class ExportFileTemplateList extends Component {
                     <TableCell>Export File Destination</TableCell>
                     <TableCell>Template</TableCell>
                     <TableCell>Questionnaire Type</TableCell>
+                    <TableCell>Welsh Questionnaire Type</TableCell>
                     <TableCell>Metadata</TableCell>
                   </TableRow>
                 </TableHead>
@@ -467,6 +523,18 @@ class ExportFileTemplateList extends Component {
                   value={this.state.questionnaireType}
                   helperText={this.state.questionnaireTypeValidationMessage}
                   id="questionnaireTypeTextField"
+                />
+                <TextField
+                  fullWidth={true}
+                  style={{ marginTop: 10 }}
+                  error={this.state.welshQuestionnaireTypeValidationError}
+                  label="Welsh Questionnaire Type"
+                  type="number"
+                  inputProps={{ min: 1, max: 99, step: 1 }}
+                  onChange={this.onWelshQuestionnaireTypeChange}
+                  value={this.state.welshQuestionnaireType}
+                  helperText={this.state.welshQuestionnaireTypeValidationMessage}
+                  id="welshQuestionnaireTypeTextField"
                 />
               </div>
               <div style={{ marginTop: 10 }}>

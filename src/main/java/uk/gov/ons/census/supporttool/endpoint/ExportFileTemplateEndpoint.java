@@ -53,7 +53,8 @@ public class ExportFileTemplateEndpoint {
               exportFileTemplateDto.setDescription(exportFileTemplate.getDescription());
               exportFileTemplateDto.setMetadata(exportFileTemplate.getMetadata());
               exportFileTemplateDto.setQuestionnaireType(exportFileTemplate.getQuestionnaireType());
-              exportFileTemplateDto.setWelshQuestionnaireType(exportFileTemplate.getWelshQuestionnaireType());
+              exportFileTemplateDto.setWelshQuestionnaireType(
+                  exportFileTemplate.getWelshQuestionnaireType());
 
               return exportFileTemplateDto;
             })
