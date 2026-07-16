@@ -268,6 +268,7 @@ public class IntegrationTestHelper {
     exportFileTemplate.setExportFileDestination("test_supplier");
     exportFileTemplate.setDescription("Test description");
     exportFileTemplate.setQuestionnaireType(1);
+    exportFileTemplate.setWelshQuestionnaireType(2);
     exportFileTemplate = exportFileTemplateRepository.saveAndFlush(exportFileTemplate);
 
     SmsTemplate smsTemplate = new SmsTemplate();

@@ -332,6 +332,7 @@ class AllEndpointsIT {
           exportFileTemplateDto.setDescription("Test description");
           exportFileTemplateDto.setMetadata(Map.of("foo", "bar"));
           exportFileTemplateDto.setQuestionnaireType(1);
+          exportFileTemplateDto.setWelshQuestionnaireType(2);
           return exportFileTemplateDto;
         });
   }
