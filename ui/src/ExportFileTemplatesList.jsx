@@ -99,6 +99,8 @@ class ExportFileTemplateList extends Component {
       newTemplateMetadataValidationError: false,
       questionnaireTypeValidationError: false,
       questionnaireTypeValidationMessage: "",
+      welshQuestionnaireTypeValidationError: false,
+      welshQuestionnaireTypeValidationMessage: "",
       createExportFileTemplatePackCodeError: "",
       createExportFileTemplateDialogDisplayed: true,
     });
