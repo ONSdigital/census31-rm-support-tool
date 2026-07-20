@@ -15,7 +15,7 @@ public class CaseDto {
   private boolean receiptReceived;
   private RefusalType refusalReceived;
   private boolean invalid;
-  private boolean eqLaunched;
+  private boolean surveyLaunched;
   private String uprn;
   private String estabUprn;
   private String addressType;
