@@ -217,12 +217,15 @@ class ExportFileTemplateList extends Component {
     const questionnaireTypeInput = this.state.questionnaireType.trim();
     let questionnaireType = null;
 
-    const welshQuestionnaireTypeInput = this.state.welshQuestionnaireType.trim();
+    const welshQuestionnaireTypeInput =
+      this.state.welshQuestionnaireType.trim();
     let welshQuestionnaireType = null;
 
     if (questionnaireTypeInput) {
       const parsedQuestionnaireType = Number(questionnaireTypeInput);
-      const questionnaireTypeIsInteger = Number.isInteger(parsedQuestionnaireType);
+      const questionnaireTypeIsInteger = Number.isInteger(
+        parsedQuestionnaireType,
+      );
       const questionnaireTypeInRange =
         parsedQuestionnaireType >= 1 && parsedQuestionnaireType <= 99;
 
@@ -238,10 +241,11 @@ class ExportFileTemplateList extends Component {
       }
     }
 
-
     if (welshQuestionnaireTypeInput) {
       const parsedWelshQuestionnaireType = Number(welshQuestionnaireTypeInput);
-      const welshQuestionnaireTypeIsInteger = Number.isInteger(parsedWelshQuestionnaireType);
+      const welshQuestionnaireTypeIsInteger = Number.isInteger(
+        parsedWelshQuestionnaireType,
+      );
       const welshQuestionnaireTypeInRange =
         parsedWelshQuestionnaireType >= 1 && parsedWelshQuestionnaireType <= 99;
 
@@ -257,7 +261,6 @@ class ExportFileTemplateList extends Component {
       }
     }
 
-
     if (hasQuestionnaireTypeTemplateColumns && !questionnaireTypeInput) {
       this.setState({
         questionnaireTypeValidationError: true,
@@ -267,7 +270,10 @@ class ExportFileTemplateList extends Component {
       failedValidation = true;
     }
 
-    if (hasWelshQuestionnaireTypeTemplateColumns && !welshQuestionnaireTypeInput) {
+    if (
+      hasWelshQuestionnaireTypeTemplateColumns &&
+      !welshQuestionnaireTypeInput
+    ) {
       this.setState({
         welshQuestionnaireTypeValidationError: true,
         welshQuestionnaireTypeValidationMessage:
@@ -535,7 +541,9 @@ class ExportFileTemplateList extends Component {
                   inputProps={{ min: 1, max: 99, step: 1 }}
                   onChange={this.onWelshQuestionnaireTypeChange}
                   value={this.state.welshQuestionnaireType}
-                  helperText={this.state.welshQuestionnaireTypeValidationMessage}
+                  helperText={
+                    this.state.welshQuestionnaireTypeValidationMessage
+                  }
                   id="welshQuestionnaireTypeTextField"
                 />
               </div>

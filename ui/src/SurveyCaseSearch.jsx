@@ -92,7 +92,6 @@ class SurveyCaseSearch extends Component {
     return /^\+?\d+$/.test(str);
   };
 
-
   getCaseCells = (caze) => {
     const caseId = caze.id;
     let caseCells = [];
@@ -112,25 +111,15 @@ class SurveyCaseSearch extends Component {
       <TableCell key={1}>{caze.collectionExerciseName}</TableCell>,
     );
 
-    caseCells.push(
-        <TableCell key={2}>{caze.addressLine1}</TableCell>,
-    );
+    caseCells.push(<TableCell key={2}>{caze.addressLine1}</TableCell>);
 
-    caseCells.push(
-        <TableCell key={3}>{caze.postcode}</TableCell>,
-    );
+    caseCells.push(<TableCell key={3}>{caze.postcode}</TableCell>);
 
-    caseCells.push(
-        <TableCell key={4}>{caze.caseType}</TableCell>,
-    );
+    caseCells.push(<TableCell key={4}>{caze.caseType}</TableCell>);
 
-    caseCells.push(
-        <TableCell key={5}>{caze.uprn}</TableCell>,
-    );
+    caseCells.push(<TableCell key={5}>{caze.uprn}</TableCell>);
 
-    caseCells.push(
-        <TableCell key={6}>{caze.addressType}</TableCell>,
-    );
+    caseCells.push(<TableCell key={6}>{caze.addressType}</TableCell>);
 
     return caseCells;
   };

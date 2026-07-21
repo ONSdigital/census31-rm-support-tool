@@ -281,7 +281,6 @@ class CollectionExerciseDetails extends Component {
       newActionRulePackCode = this.state.newActionRuleExportFilePackCode;
     }
 
-
     const newActionRule = {
       type: this.state.newActionRuleType,
       description: this.state.newActionRuleDescription,

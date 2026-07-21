@@ -149,7 +149,6 @@ export const getActionRuleEmailPackCodesForSurvey = async (
   return emailTemplatesJson;
 };
 
-
 // This is not efficent, but it seems to work ok ish
 export const getAuthorisedActivities = async () => {
   const authResponse = await fetch("/api/auth");

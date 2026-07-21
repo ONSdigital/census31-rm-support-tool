@@ -224,7 +224,8 @@ class SmsTemplatesList extends Component {
       parsedTemplate.some(
         (templateColumn) =>
           typeof templateColumn === "string" &&
-          (templateColumn.includes("__uac__") || templateColumn.includes("__qid__")),
+          (templateColumn.includes("__uac__") ||
+            templateColumn.includes("__qid__")),
       );
 
     const questionnaireTypeInput = this.state.questionnaireType.trim();
@@ -232,7 +233,9 @@ class SmsTemplatesList extends Component {
 
     if (questionnaireTypeInput) {
       const parsedQuestionnaireType = Number(questionnaireTypeInput);
-      const questionnaireTypeIsInteger = Number.isInteger(parsedQuestionnaireType);
+      const questionnaireTypeIsInteger = Number.isInteger(
+        parsedQuestionnaireType,
+      );
       const questionnaireTypeInRange =
         parsedQuestionnaireType >= 1 && parsedQuestionnaireType <= 99;
 
