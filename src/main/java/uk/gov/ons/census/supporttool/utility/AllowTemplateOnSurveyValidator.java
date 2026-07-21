@@ -8,7 +8,7 @@ import java.util.Set;
 
 public class AllowTemplateOnSurveyValidator {
   private static final Set<String> OTHER_ALLOWABLE_COLUMNS =
-      Set.of("__uac__", "__welsh_uac__", "__qid__", "__welsh_qid__", "__caseref__");
+      Set.of("__uac__", "__welsh_uac__", "__qid__", "__welsh_qid__", "__pack_code__", "__caseref__");
 
   public static Optional<String> validate(Set<String> templateColumns) {
     Set<String> surveyColumns = getSurveyColumns();
