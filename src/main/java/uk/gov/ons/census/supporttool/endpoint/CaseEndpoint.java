@@ -110,7 +110,7 @@ public class CaseEndpoint {
       uacQidLinkDto.setCreatedAt(uacQidLink.getCreatedAt());
       uacQidLinkDto.setLastUpdatedAt(uacQidLink.getLastUpdatedAt());
       uacQidLinkDto.setReceiptReceived(uacQidLink.isReceiptReceived());
-      uacQidLinkDto.setEqLaunched(uacQidLink.isEqLaunched());
+      uacQidLinkDto.setSurveyLaunched(uacQidLink.isSurveyLaunched());
       uacQidLinks.add(uacQidLinkDto);
 
       for (Event event : uacQidLink.getEvents()) {
