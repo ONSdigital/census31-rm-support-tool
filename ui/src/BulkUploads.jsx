@@ -30,7 +30,6 @@ const BULK_INVALID_JOB_TYPE = "BULK_INVALID";
 const BULK_INVALID_VIEW_PERMISSION = "VIEW_BULK_INVALID_PROGRESS";
 const BULK_INVALID_LOAD_PERMISSION = "LOAD_BULK_INVALID";
 
-
 class BulkUploads extends Component {
   state = {
     authorisedActivities: [],
@@ -83,7 +82,6 @@ class BulkUploads extends Component {
       BULK_INVALID_VIEW_PERMISSION,
       "bulkInvalidJobs",
     );
-
   };
 
   getAuthorisedActivities = async () => {

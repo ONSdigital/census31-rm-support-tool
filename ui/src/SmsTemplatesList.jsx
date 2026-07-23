@@ -32,6 +32,7 @@ class SmsTemplatesList extends Component {
     packCode: "",
     description: "",
     template: "",
+    newTemplateMetadata: "",
     metadata: "",
     packCodeValidationError: false,
     descriptionValidationError: false,
@@ -41,6 +42,9 @@ class SmsTemplatesList extends Component {
     notifyTemplateIdValidationError: false,
     notifyTemplateIdErrorMessage: "",
     createSMSTemplateDescriptionError: "",
+    questionnaireType: "",
+    questionnaireTypeValidationError: false,
+    questionnaireTypeValidationMessage: "",
   };
 
   componentDidMount() {
@@ -95,6 +99,9 @@ class SmsTemplatesList extends Component {
       templateValidationErrorMessage: "",
       newTemplateMetadataValidationError: false,
       notifyTemplateIdValidationError: false,
+      questionnaireType: "",
+      questionnaireTypeValidationError: false,
+      questionnaireTypeValidationMessage: "",
       createSmsTemplateDialogDisplayed: true,
       notifyServiceRefValidationError: false,
       createSmsTemplateError: "",
@@ -121,9 +128,12 @@ class SmsTemplatesList extends Component {
     this.setState({
       createSMSTemplatePackCodeError: "",
       packCodeValidationError: false,
+      questionnaireTypeValidationError: false,
+      questionnaireTypeValidationMessage: "",
     });
 
     var failedValidation = false;
+    let parsedTemplate = null;
 
     if (!this.state.packCode.trim()) {
       this.setState({ packCodeValidationError: true });
@@ -170,10 +180,10 @@ class SmsTemplatesList extends Component {
       failedValidation = true;
     } else {
       try {
-        const parsedJson = JSON.parse(this.state.template);
+        parsedTemplate = JSON.parse(this.state.template);
         const hasDuplicateTemplateColumns =
-          new Set(parsedJson).size !== parsedJson.length;
-        if (!Array.isArray(parsedJson) || hasDuplicateTemplateColumns) {
+          new Set(parsedTemplate).size !== parsedTemplate.length;
+        if (!Array.isArray(parsedTemplate) || hasDuplicateTemplateColumns) {
           this.setState({ templateValidationError: true });
           failedValidation = true;
           this.setState({
@@ -209,6 +219,47 @@ class SmsTemplatesList extends Component {
       }
     }
 
+    const hasQuestionnaireTypeTemplateColumns =
+      Array.isArray(parsedTemplate) &&
+      parsedTemplate.some(
+        (templateColumn) =>
+          typeof templateColumn === "string" &&
+          (templateColumn.includes("__uac__") ||
+            templateColumn.includes("__qid__")),
+      );
+
+    const questionnaireTypeInput = this.state.questionnaireType.trim();
+    let questionnaireType = null;
+
+    if (questionnaireTypeInput) {
+      const parsedQuestionnaireType = Number(questionnaireTypeInput);
+      const questionnaireTypeIsInteger = Number.isInteger(
+        parsedQuestionnaireType,
+      );
+      const questionnaireTypeInRange =
+        parsedQuestionnaireType >= 1 && parsedQuestionnaireType <= 99;
+
+      if (!questionnaireTypeIsInteger || !questionnaireTypeInRange) {
+        this.setState({
+          questionnaireTypeValidationError: true,
+          questionnaireTypeValidationMessage:
+            "Questionnaire Type must be an integer between 1 and 99 inclusive",
+        });
+        failedValidation = true;
+      } else {
+        questionnaireType = parsedQuestionnaireType;
+      }
+    }
+
+    if (hasQuestionnaireTypeTemplateColumns && !questionnaireTypeInput) {
+      this.setState({
+        questionnaireTypeValidationError: true,
+        questionnaireTypeValidationMessage:
+          "Questionnaire Type is required when template contains __uac__ or __qid__",
+      });
+      failedValidation = true;
+    }
+
     if (failedValidation) {
       this.createSmsTemplateInProgress = false;
       return;
@@ -218,9 +269,10 @@ class SmsTemplatesList extends Component {
       notifyTemplateId: this.state.notifyTemplateId,
       packCode: this.state.packCode,
       description: this.state.description,
-      template: JSON.parse(this.state.template),
+      template: parsedTemplate,
       notifyServiceRef: this.state.notifyServiceRef,
       metadata: metadata,
+      questionnaireType: questionnaireType,
     };
 
     const response = await fetch("/api/smsTemplates", {
@@ -293,6 +345,14 @@ class SmsTemplatesList extends Component {
     });
   };
 
+  onQuestionnaireTypeChange = (event) => {
+    this.setState({
+      questionnaireType: event.target.value,
+      questionnaireTypeValidationError: false,
+      questionnaireTypeValidationMessage: "",
+    });
+  };
+
   render() {
     const smsTemplateRows = this.state.smsTemplates.map((smsTemplate) => (
       <TableRow key={smsTemplate.packCode}>
@@ -304,6 +364,9 @@ class SmsTemplatesList extends Component {
         </TableCell>
         <TableCell component="th" scope="row">
           {JSON.stringify(smsTemplate.template)}
+        </TableCell>
+        <TableCell component="th" scope="row">
+          {smsTemplate.questionnaireType}
         </TableCell>
         <TableCell component="th" scope="row">
           {smsTemplate.notifyTemplateId}
@@ -338,6 +401,7 @@ class SmsTemplatesList extends Component {
                     <TableCell>Pack Code</TableCell>
                     <TableCell>Description</TableCell>
                     <TableCell>Template</TableCell>
+                    <TableCell>Questionnaire Type</TableCell>
                     <TableCell>Gov Notify Template ID</TableCell>
                     <TableCell>Metadata</TableCell>
                     <TableCell>Gov Notify Service Ref</TableCell>
@@ -407,6 +471,18 @@ class SmsTemplatesList extends Component {
                   onChange={this.onTemplateChange}
                   value={this.state.template}
                   helperText={this.state.templateValidationErrorMessage}
+                />
+                <TextField
+                  fullWidth={true}
+                  style={{ marginTop: 10 }}
+                  error={this.state.questionnaireTypeValidationError}
+                  label="Questionnaire Type"
+                  type="number"
+                  inputProps={{ min: 1, max: 99, step: 1 }}
+                  onChange={this.onQuestionnaireTypeChange}
+                  value={this.state.questionnaireType}
+                  helperText={this.state.questionnaireTypeValidationMessage}
+                  id="questionnaireTypeTextField"
                 />
                 <TextField
                   fullWidth={true}

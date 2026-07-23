@@ -1,9 +1,6 @@
 import React, { Component } from "react";
 import "@fontsource/roboto";
-import {
-  Paper,
-  Typography,
-} from "@material-ui/core";
+import { Paper, Typography } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import CollectionExerciseList from "./CollectionExerciseList";
 import AllowedExportFileTemplatesActionRulesList from "./AllowedExportFileTemplatesActionRulesList";

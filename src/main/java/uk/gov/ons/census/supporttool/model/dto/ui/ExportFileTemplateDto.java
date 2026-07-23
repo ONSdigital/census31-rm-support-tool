@@ -13,6 +13,7 @@ public class ExportFileTemplateDto {
   private String description;
   private Object metadata;
   private Integer questionnaireType;
+  private Integer welshQuestionnaireType;
 
   public ExportFileTemplateDto(ExportFileTemplate exportFileTemplate) {
     packCode = exportFileTemplate.getPackCode();
@@ -21,5 +22,6 @@ public class ExportFileTemplateDto {
     description = exportFileTemplate.getDescription();
     metadata = exportFileTemplate.getMetadata();
     questionnaireType = exportFileTemplate.getQuestionnaireType();
+    welshQuestionnaireType = exportFileTemplate.getWelshQuestionnaireType();
   }
 }

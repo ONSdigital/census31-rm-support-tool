@@ -53,6 +53,9 @@ public class ExportFileTemplateEndpoint {
               exportFileTemplateDto.setDescription(exportFileTemplate.getDescription());
               exportFileTemplateDto.setMetadata(exportFileTemplate.getMetadata());
               exportFileTemplateDto.setQuestionnaireType(exportFileTemplate.getQuestionnaireType());
+              exportFileTemplateDto.setWelshQuestionnaireType(
+                  exportFileTemplate.getWelshQuestionnaireType());
+
               return exportFileTemplateDto;
             })
         .collect(Collectors.toList());
@@ -92,7 +95,7 @@ public class ExportFileTemplateEndpoint {
     exportFileTemplate.setDescription(exportFileTemplateDto.getDescription());
     exportFileTemplate.setMetadata(exportFileTemplateDto.getMetadata());
     exportFileTemplate.setQuestionnaireType(exportFileTemplateDto.getQuestionnaireType());
-
+    exportFileTemplate.setWelshQuestionnaireType(exportFileTemplateDto.getWelshQuestionnaireType());
     exportFileTemplateRepository.saveAndFlush(exportFileTemplate);
 
     return new ResponseEntity<>(HttpStatus.CREATED);

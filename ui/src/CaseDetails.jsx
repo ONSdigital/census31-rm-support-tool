@@ -321,7 +321,7 @@ class CaseDetails extends Component {
                 <TableBody>{uacQids}</TableBody>
               </Table>
             </TableContainer>
-          {/*  TODO: Update page to show all case details*/}
+            {/*  TODO: Update page to show all case details*/}
           </div>
         )}
         {this.state.eventToShow && (
