@@ -63,10 +63,7 @@ public class DeactivateUacEndpoint {
           HttpStatus.NOT_FOUND, String.format("Could not find QID %s", qid));
     }
 
-    authUser.checkUserPermission(
-        userEmail,
-        uacQidLinkOpt.get().getCaze().getCollectionExercise().getSurvey().getId(),
-        DEACTIVATE_UAC);
+    authUser.checkGlobalUserPermission(userEmail, DEACTIVATE_UAC);
 
     EventDTO event = new EventDTO();
 

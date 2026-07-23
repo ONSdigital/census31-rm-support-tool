@@ -414,4 +414,98 @@ public class IntegrationTestHelper {
     permission.setGroup(group);
     userGroupPermissionRepository.saveAndFlush(permission);
   }
+
+  public void testGetWithoutCase(
+      int port, UserGroupAuthorisedActivityType activity, BundleUrlGetter bundleUrlGetter) {
+    if (activity != null) {
+      setUpTestUserPermission(activity);
+    }
+
+    BundleOfUsefulTestStuff bundle = getTestBundleWithoutCase();
+
+    String url = String.format("http://localhost:%d/api/%s", port, bundleUrlGetter.getUrl(bundle));
+    ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+    assertThat(response.getStatusCode()).as("GET is OK").isEqualTo(HttpStatus.OK);
+    assertThat(response.getHeaders().get("Referrer-Policy").get(0)).isEqualTo("no-referrer");
+    assertThat(response.getHeaders().get("Content-Security-Policy").get(0))
+        .isEqualTo(
+            "default-src 'self'; manifest-src https://cdn.ons.gov.uk/ ; style-src 'self' 'unsafe-inline' ; upgrade-insecure-requests; block-all-mixed-content");
+    assertThat(response.getHeaders().get("Strict-Transport-Security").get(0))
+        .isEqualTo("max-age=31536000 ; includeSubDomains");
+    assertThat(response.getHeaders().get("X-Frame-Options").get(0)).isEqualTo("DENY");
+    assertThat(response.getHeaders().get("X-Content-Type-Options").get(0)).isEqualTo("nosniff");
+    assertThat(response.getHeaders().get("Permissions-Policy").get(0))
+        .isEqualTo(
+            "accelerometer=(),autoplay=(),camera=(),display-capture=(),document-domain=(),encrypted-media=(),fullscreen=(),geolocation=(),gyroscope=(),magnetometer=(),microphone=(),midi=(),payment=(),picture-in-picture=(),publickey-credentials-get=(),screen-wake-lock=(),sync-xhr=(self),usb=(),xr-spatial-tracking=()");
+
+    if (activity != null) {
+      deleteAllPermissions();
+      restoreDummyUserAndOtherGubbins(bundle); // Restore the user etc so that user tests still work
+
+      try {
+        restTemplate.getForEntity(url, String.class);
+        fail("GET API call was not forbidden, but should have been");
+      } catch (HttpClientErrorException expectedException) {
+        assertThat(expectedException.getStatusCode())
+            .as("GET is FORBIDDEN")
+            .isEqualTo(HttpStatus.FORBIDDEN);
+      }
+    }
+  }
+
+  private BundleOfUsefulTestStuff getTestBundleWithoutCase() {
+
+    UacQidLink uacQidLink = new UacQidLink();
+    uacQidLink.setId(UUID.randomUUID());
+    uacQidLink.setQid("TEST_QID_" + UUID.randomUUID());
+    uacQidLink.setUac("TEST_UAC_" + UUID.randomUUID());
+    uacQidLink.setUacHash("test fake hash");
+    uacQidLink.setCaze(null);
+    uacQidLink = uacQidLinkRepository.saveAndFlush(uacQidLink);
+
+    ExportFileTemplate exportFileTemplate = new ExportFileTemplate();
+    exportFileTemplate.setPackCode("TEST_PRINT_PACK_CODE_" + UUID.randomUUID());
+    exportFileTemplate.setTemplate(new String[] {"UPRN", "ADDRESS_LINE1"});
+    exportFileTemplate.setExportFileDestination("test_supplier");
+    exportFileTemplate.setDescription("Test description");
+    exportFileTemplate = exportFileTemplateRepository.saveAndFlush(exportFileTemplate);
+
+    SmsTemplate smsTemplate = new SmsTemplate();
+    smsTemplate.setPackCode("TEST_SMS_PACK_CODE_" + UUID.randomUUID());
+    smsTemplate.setTemplate(new String[] {"UPRN", "ADDRESS_LINE1"});
+    smsTemplate.setNotifyTemplateId(UUID.randomUUID());
+    smsTemplate.setDescription("Test description");
+    smsTemplate.setNotifyServiceRef("test_service");
+    smsTemplate = smsTemplateRepository.saveAndFlush(smsTemplate);
+
+    EmailTemplate emailTemplate = new EmailTemplate();
+    emailTemplate.setPackCode("TEST_EMAIL_PACK_CODE_" + UUID.randomUUID());
+    emailTemplate.setTemplate(new String[] {"UPRN", "ADDRESS_LINE1"});
+    emailTemplate.setNotifyTemplateId(UUID.randomUUID());
+    emailTemplate.setDescription("Test description");
+    emailTemplate.setNotifyServiceRef("test_service");
+    emailTemplate = emailTemplateRepository.saveAndFlush(emailTemplate);
+
+    User user = setupDummyUser(UUID.randomUUID());
+    UserGroup group = setupDummyGroup(UUID.randomUUID());
+    UserGroup secondGroup = setupDummyGroup(UUID.randomUUID());
+    UserGroupMember userGroupMember = setupDummyGroupMember(UUID.randomUUID(), user, group);
+    UserGroupAdmin userGroupAdmin = setupDummyGroupAdmin(UUID.randomUUID(), user, group);
+    UserGroupPermission userGroupPermission = setupDummyGroupPermission(UUID.randomUUID(), group);
+
+    BundleOfUsefulTestStuff bundle = new BundleOfUsefulTestStuff();
+    bundle.setCaseId(null);
+    bundle.setQid(uacQidLink.getQid());
+    bundle.setExportFileTemplatePackCode(exportFileTemplate.getPackCode());
+    bundle.setSmsTemplatePackCode(smsTemplate.getPackCode());
+    bundle.setEmailTemplatePackCode(emailTemplate.getPackCode());
+    bundle.setUserId(user.getId());
+    bundle.setGroupId(group.getId());
+    bundle.setGroupMemberId(userGroupMember.getId());
+    bundle.setGroupAdminId(userGroupAdmin.getId());
+    bundle.setGroupPermissionId(userGroupPermission.getId());
+    bundle.setSecondGroupId(secondGroup.getId());
+
+    return bundle;
+  }
 }

@@ -11,5 +11,5 @@ public class UacQidLinkDto {
   private OffsetDateTime lastUpdatedAt;
   private Object metadata;
   private boolean receiptReceived = false;
-  private boolean eqLaunched = false;
+  private boolean surveyLaunched = false;
 }
