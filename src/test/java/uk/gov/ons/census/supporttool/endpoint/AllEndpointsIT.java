@@ -522,4 +522,12 @@ class AllEndpointsIT {
         UserGroupAuthorisedActivityType.SUPER_USER,
         (bundle) -> String.format("userGroupPermissions/%s", bundle.getGroupPermissionId()));
   }
+
+  @Test
+  void testDeactivateUacEndpointsWithoutCase() {
+    integrationTestHelper.testGetWithoutCase(
+        port,
+        UserGroupAuthorisedActivityType.DEACTIVATE_UAC,
+        (bundle) -> String.format("deactivateUac/%s", bundle.getQid()));
+  }
 }
