@@ -35,8 +35,7 @@ public class CaseDto {
   private String msoa;
   private String lad;
   private String region;
-  private String htcWillingness;
-  private String htcDigital;
+  private String htc;
   private String fieldCoordinatorId;
   private String fieldOfficerId;
   private String treatmentCode;

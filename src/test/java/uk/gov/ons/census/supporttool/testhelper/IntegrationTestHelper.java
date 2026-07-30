@@ -240,8 +240,7 @@ public class IntegrationTestHelper {
     caze.setCeExpectedCapacity(0);
     caze.setFieldCoordinatorId("fcor_id");
     caze.setFieldOfficerId("foff_id");
-    caze.setHtcDigital("0");
-    caze.setHtcWillingness("0");
+    caze.setHtc("1");
     caze.setLad("0000");
     caze.setLatitude("0.0.0.0.0.0");
     caze.setLsoa("0000");

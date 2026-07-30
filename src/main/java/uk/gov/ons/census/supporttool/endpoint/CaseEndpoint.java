@@ -88,8 +88,7 @@ public class CaseEndpoint {
     caseDto.setLsoa(caze.getLsoa());
     caseDto.setMsoa(caze.getMsoa());
     caseDto.setLad(caze.getLad());
-    caseDto.setHtcDigital(caze.getHtcDigital());
-    caseDto.setHtcWillingness(caze.getHtcWillingness());
+    caseDto.setHtc(caze.getHtc());
     caseDto.setLatitude(caze.getLatitude());
     caseDto.setLongitude(caze.getLongitude());
     caseDto.setPrintBatch(caze.getPrintBatch());
