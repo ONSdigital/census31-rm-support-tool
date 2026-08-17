@@ -19,12 +19,6 @@ public class NotifyServiceClient {
   @Value("${notifyservice.connection.port}")
   private String port;
 
-  public void requestSmsFulfilment(RequestDTO smsFulfilmentRequest) {
-    RestTemplate restTemplate = new RestTemplate();
-    restTemplate.postForObject(
-        createUri("/sms-fulfilment"), smsFulfilmentRequest, RequestDTO.class);
-  }
-
   public void requestEmailFulfilment(RequestDTO emailFulfilmentRequest) {
     RestTemplate restTemplate = new RestTemplate();
     restTemplate.postForObject(

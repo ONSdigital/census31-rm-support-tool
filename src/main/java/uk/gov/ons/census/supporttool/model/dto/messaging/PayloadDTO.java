@@ -10,7 +10,7 @@ public class PayloadDTO {
   private DeactivateUacDTO deactivateUac;
   private RefusalDTO refusal;
   private InvalidCaseDTO invalidCase;
-  private PrintFulfilmentDTO printFulfilment;
+  private FulfilmentRequestDTO fulfilmentRequest;
 
   private SurveyUpdateDto surveyUpdate;
   private CollectionExerciseUpdateDTO collectionExerciseUpdate;

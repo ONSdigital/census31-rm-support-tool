@@ -11,12 +11,12 @@ import uk.gov.ons.census.common.model.entity.Case;
 import uk.gov.ons.census.common.model.entity.EventType;
 import uk.gov.ons.census.supporttool.model.dto.messaging.EventDTO;
 import uk.gov.ons.census.supporttool.model.dto.messaging.EventHeaderDTO;
+import uk.gov.ons.census.supporttool.model.dto.messaging.FulfilmentRequestDTO;
 import uk.gov.ons.census.supporttool.model.dto.messaging.InvalidCaseDTO;
 import uk.gov.ons.census.supporttool.model.dto.messaging.PayloadDTO;
-import uk.gov.ons.census.supporttool.model.dto.messaging.PrintFulfilmentDTO;
 import uk.gov.ons.census.supporttool.model.dto.messaging.RefusalDTO;
+import uk.gov.ons.census.supporttool.model.dto.rest.FulfilmentRequest;
 import uk.gov.ons.census.supporttool.model.dto.ui.InvalidCase;
-import uk.gov.ons.census.supporttool.model.dto.ui.PrintFulfilment;
 import uk.gov.ons.census.supporttool.model.dto.ui.Refusal;
 import uk.gov.ons.census.supporttool.model.repository.CaseRepository;
 import uk.gov.ons.census.supporttool.utility.EventHelper;
@@ -33,8 +33,8 @@ public class CaseService {
   @Value("${queueconfig.invalid-case-event-topic}")
   private String invalidCaseEventTopic;
 
-  @Value("${queueconfig.print-fulfilment-topic}")
-  private String printFulfilmentTopic;
+  @Value("${queueconfig.fulfilment-request-topic}")
+  private String fulfilmentRequestTopic;
 
   @Value("${spring.cloud.gcp.pubsub.project-id}")
   private String pubsubProject;
@@ -92,26 +92,26 @@ public class CaseService {
     pubSubTemplate.publish(topic, event);
   }
 
-  public void buildAndSendPrintFulfilmentCaseEvent(
-      PrintFulfilment printFulfilment, Case caze, String userEmail) {
+  public void buildAndSendFulfilmentCaseEvent(
+      FulfilmentRequest fulfilment, Case caze, String userEmail) {
 
-    PrintFulfilmentDTO printFulfilmentDTO = new PrintFulfilmentDTO();
-    printFulfilmentDTO.setCaseId(caze.getId());
-    printFulfilmentDTO.setPackCode(printFulfilment.getPackCode());
-    printFulfilmentDTO.setUacMetadata(printFulfilment.getUacMetadata());
-    printFulfilmentDTO.setPersonalisation(printFulfilment.getPersonalisation());
+    FulfilmentRequestDTO fulfilmentRequest = new FulfilmentRequestDTO();
+    fulfilmentRequest.setCaseId(caze.getId());
+    fulfilmentRequest.setFulfilmentCode(fulfilment.getFulfilmentCode());
+    fulfilmentRequest.setContact(fulfilment.getContact());
 
     PayloadDTO payloadDTO = new PayloadDTO();
-    payloadDTO.setPrintFulfilment(printFulfilmentDTO);
+    payloadDTO.setFulfilmentRequest(fulfilmentRequest);
 
     EventDTO event = new EventDTO();
 
     EventHeaderDTO eventHeader =
-        EventHelper.createEventDTO(printFulfilmentTopic, userEmail, EventType.FULFILMENT_REQUEST);
+        EventHelper.createEventDTO(fulfilmentRequestTopic, userEmail, EventType.FULFILMENT_REQUEST);
     event.setHeader(eventHeader);
     event.setPayload(payloadDTO);
 
-    String topic = toProjectTopicName(printFulfilmentTopic, pubsubProject).toString();
+    String topic = toProjectTopicName(fulfilmentRequestTopic, pubsubProject).toString();
+
     pubSubTemplate.publish(topic, event);
   }
 }

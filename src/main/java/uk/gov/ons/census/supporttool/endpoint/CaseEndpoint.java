@@ -22,10 +22,10 @@ import uk.gov.ons.census.common.model.entity.UacQidLink;
 import uk.gov.ons.census.common.model.entity.UserGroupAuthorisedActivityType;
 import uk.gov.ons.census.supporttool.client.NotifyServiceClient;
 import uk.gov.ons.census.supporttool.model.dto.rest.EmailFulfilment;
+import uk.gov.ons.census.supporttool.model.dto.rest.FulfilmentRequest;
 import uk.gov.ons.census.supporttool.model.dto.rest.RequestDTO;
 import uk.gov.ons.census.supporttool.model.dto.rest.RequestHeaderDTO;
 import uk.gov.ons.census.supporttool.model.dto.rest.RequestPayloadDTO;
-import uk.gov.ons.census.supporttool.model.dto.rest.SmsFulfilment;
 import uk.gov.ons.census.supporttool.model.dto.ui.CaseDto;
 import uk.gov.ons.census.supporttool.model.dto.ui.EmailFulfilmentAction;
 import uk.gov.ons.census.supporttool.model.dto.ui.EventDto;
@@ -171,7 +171,12 @@ public class CaseEndpoint {
         caze.getCollectionExercise().getSurvey().getId(),
         UserGroupAuthorisedActivityType.CREATE_CASE_EXPORT_FILE_FULFILMENT);
 
-    caseService.buildAndSendPrintFulfilmentCaseEvent(printFulfilment, caze, userEmail);
+    FulfilmentRequest fulfilmentRequest = new FulfilmentRequest();
+    fulfilmentRequest.setFulfilmentCode(printFulfilment.getPackCode());
+    fulfilmentRequest.setCaseId(caseId);
+    fulfilmentRequest.setContact(printFulfilment.toContact());
+
+    caseService.buildAndSendFulfilmentCaseEvent(fulfilmentRequest, caze, userEmail);
 
     return new ResponseEntity<>(HttpStatus.OK);
   }
@@ -209,7 +214,7 @@ public class CaseEndpoint {
         caze.getCollectionExercise().getSurvey().getId(),
         UserGroupAuthorisedActivityType.CREATE_CASE_SMS_FULFILMENT);
 
-    RequestDTO smsFulfilmentRequest = new RequestDTO();
+    RequestDTO fulfilmentRequestDTO = new RequestDTO();
     RequestHeaderDTO header = new RequestHeaderDTO();
     header.setSource("SUPPORT_TOOL");
     header.setChannel("RM");
@@ -217,28 +222,18 @@ public class CaseEndpoint {
     header.setOriginatingUser(userEmail);
 
     RequestPayloadDTO payload = new RequestPayloadDTO();
-    SmsFulfilment smsFulfilment = new SmsFulfilment();
-    smsFulfilment.setCaseId(caze.getId());
-    smsFulfilment.setPackCode(smsFulfilmentAction.getPackCode());
-    smsFulfilment.setPhoneNumber(smsFulfilmentAction.getPhoneNumber());
-    smsFulfilment.setUacMetadata(smsFulfilmentAction.getUacMetadata());
-    smsFulfilment.setPersonalisation(smsFulfilmentAction.getPersonalisation());
 
-    smsFulfilmentRequest.setHeader(header);
-    payload.setSmsFulfilment(smsFulfilment);
-    smsFulfilmentRequest.setPayload(payload);
+    FulfilmentRequest fulfilmentRequest = new FulfilmentRequest();
+    fulfilmentRequest.setFulfilmentCode(smsFulfilmentAction.getPackCode());
+    fulfilmentRequest.setCaseId(caseId);
+    fulfilmentRequest.setContact(smsFulfilmentAction.toContact());
 
-    Optional<String> errorOpt = requestSmsFulfilment(smsFulfilmentRequest);
-    if (errorOpt.isPresent()) {
-      log.atWarn()
-          .setMessage(
-              "Failed to request sms fulfilment, there are validation errors in the provided data")
-          .addKeyValue("httpStatus", HttpStatus.BAD_REQUEST)
-          .addKeyValue("userEmail", userEmail)
-          .addKeyValue("caseId", caseId)
-          .log();
-      return new ResponseEntity<>(errorOpt.get(), HttpStatus.BAD_REQUEST);
-    }
+    fulfilmentRequestDTO.setHeader(header);
+    payload.setFulfilmentRequest(fulfilmentRequest);
+    fulfilmentRequestDTO.setPayload(payload);
+
+    caseService.buildAndSendFulfilmentCaseEvent(fulfilmentRequest, caze, userEmail);
+
     return new ResponseEntity<>(HttpStatus.OK);
   }
 
@@ -285,15 +280,6 @@ public class CaseEndpoint {
       return new ResponseEntity<>(errorOpt.get(), HttpStatus.BAD_REQUEST);
     }
     return new ResponseEntity<>(HttpStatus.OK);
-  }
-
-  private Optional<String> requestSmsFulfilment(RequestDTO smsFulfilmentRequest) {
-    try {
-      notifyServiceClient.requestSmsFulfilment(smsFulfilmentRequest);
-    } catch (HttpClientErrorException e) {
-      return Optional.of(e.getResponseBodyAsString());
-    }
-    return Optional.empty();
   }
 
   private Optional<String> requestEmailFulfilment(RequestDTO emailFulfilmentRequest) {
