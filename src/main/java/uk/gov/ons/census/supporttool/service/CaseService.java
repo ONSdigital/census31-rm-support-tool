@@ -107,7 +107,7 @@ public class CaseService {
     EventDTO event = new EventDTO();
 
     EventHeaderDTO eventHeader =
-        EventHelper.createEventDTO(printFulfilmentTopic, userEmail, EventType.PRINT_FULFILMENT);
+        EventHelper.createEventDTO(printFulfilmentTopic, userEmail, EventType.FULFILMENT_REQUEST);
     event.setHeader(eventHeader);
     event.setPayload(payloadDTO);
 

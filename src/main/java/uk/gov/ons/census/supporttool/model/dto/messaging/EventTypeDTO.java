@@ -5,4 +5,5 @@ public enum EventTypeDTO {
   INVALID_CASE,
   REFUSAL,
   PRINT_FULFILMENT,
+  FULFILMENT_REQUEST
 }
