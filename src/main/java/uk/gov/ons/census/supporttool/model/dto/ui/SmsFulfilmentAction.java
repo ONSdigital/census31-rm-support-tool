@@ -16,15 +16,9 @@ public class SmsFulfilmentAction {
   private Map<String, String> personalisation;
 
   public Contact toContact() {
-    Map<String, String> contactValues = toStringMap(personalisation);
     Contact contact = new Contact();
+    if (phoneNumber != null) contact.setTelNo(phoneNumber);
 
-    if (contactValues != null) {
-      if (contactValues.get("forename") != null) contact.setForename(contactValues.get("forename"));
-      if (contactValues.get("surname") != null) contact.setSurname(contactValues.get("surname"));
-      if (contactValues.get("title") != null) contact.setTitle(contactValues.get("title"));
-      if (phoneNumber != null) contact.setTelNo(phoneNumber);
-    }
     return contact;
   }
 
