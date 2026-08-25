@@ -88,7 +88,6 @@ exportfiledestinationconfigfile: dummy-export-file-destination-config.json
 notifyserviceconfigfile: dummy-notify-config.json
 queueconfig:
   new-case-topic: event_new-case
-  print-fulfilment-topic: event_print-fulfilment
   deactivate-uac-topic: event_deactivate-uac
   refusal-event-topic: event_refusal
   invalid-case-event-topic: event_invalid-case
@@ -96,6 +95,8 @@ queueconfig:
   update-sample-sensitive-topic: event_update-sample-sensitive
   survey-update-event-topic: event_survey-update
   collection-exercise-update-event-topic: event_collection-exercise-update
+  fulfilment-request-topic: event_fulfilment-request
+
   publishtimeout: 30  # In seconds
 
 file-upload-storage-path: /tmp/
