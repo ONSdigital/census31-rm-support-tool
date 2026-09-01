@@ -16,7 +16,7 @@ test-ui:
 	cd ui && npm install && npx eslint . && npm test -- --watchAll=false
 
 run-dev-api: build
-	docker run -e spring_profiles_active=docker --network=censusrmdockerdev_default --link ons-postgres:postgres -p 9999:9999 census-rm-support-tool:latest
+	docker run -e spring_profiles_active=docker --network=censusrmdockerdev_default --link ons-postgres:postgres -p 9999:9999 europe-west2-docker.pkg.dev/c31-rm-ci-prod/rm-docker-snapshot/census-rm-support-tool:latest
 
 run-dev-ui:
 	cd ui && npm install && npm start
