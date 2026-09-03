@@ -23,4 +23,4 @@ else
   CONTAINER_CLI=$CONTAINER_CLI mvn clean install
 fi
 
-$CONTAINER_CLI build --platform linux/amd64 . -t europe-west2-docker.pkg.dev/c31-rm-ci-prod/rm-docker-snapshot/census-rm-support-tool:latest
+$CONTAINER_CLI build --platform linux/amd64 . -t europe-west2-docker.pkg.dev/c31-rm-ci-prod/rm-docker-snapshot/census31-rm-support-tool:latest
