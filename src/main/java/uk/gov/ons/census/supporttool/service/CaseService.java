@@ -64,7 +64,7 @@ public class CaseService {
     EventDTO event = new EventDTO();
 
     EventHeaderDTO eventHeader =
-        EventHelper.createEventDTO(refusalEventTopic, userEmail, EventType.REFUSAL);
+        EventHelper.createEventDTO(refusalEventTopic, userEmail, EventType.REFUSAL_RECEIVED);
     event.setHeader(eventHeader);
     event.setPayload(payloadDTO);
 
