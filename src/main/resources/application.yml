@@ -90,7 +90,7 @@ queueconfig:
   new-case-topic: event_new-case
   deactivate-uac-topic: event_deactivate-uac
   refusal-event-topic: event_refusal
-  invalid-case-event-topic: event_invalid-case
+  invalid-case-event-topic: event_address-not-valid
   update-sample-topic: event_update-sample
   update-sample-sensitive-topic: event_update-sample-sensitive
   survey-update-event-topic: event_survey-update
