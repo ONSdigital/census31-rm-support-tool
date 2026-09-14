@@ -43,6 +43,7 @@ spring:
         size: 10
 
   jackson:
+    use-jackson2-defaults: true
     serialization:
       FAIL_ON_EMPTY_BEANS: false
 

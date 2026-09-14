@@ -140,9 +140,8 @@ public class UserGroupPermissionEndpoint {
     for (UserGroupPermission existingPermission : group.getPermissions()) {
       // Check if both the activity and survey are equal to any existing permission on this group
       // Note: Either survey can be null, so the survey comparison must be null safe on both values
-      if (existingPermission
-              .getAuthorisedActivity()
-              .equals(userGroupPermissionDto.getAuthorisedActivity())
+      if (existingPermission.getAuthorisedActivity()
+              == userGroupPermissionDto.getAuthorisedActivity()
           && ((survey == null && existingPermission.getSurvey() == null)
               || (existingPermission.getSurvey() != null
                   && existingPermission.getSurvey().equals(survey)))) {

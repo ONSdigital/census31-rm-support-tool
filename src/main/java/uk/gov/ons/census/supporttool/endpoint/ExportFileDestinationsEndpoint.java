@@ -2,8 +2,6 @@ package uk.gov.ons.census.supporttool.endpoint;
 
 import static uk.gov.ons.census.common.model.entity.UserGroupAuthorisedActivityType.LIST_EXPORT_FILE_DESTINATIONS;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -14,6 +12,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import uk.gov.ons.census.supporttool.security.AuthUser;
 import uk.gov.ons.census.supporttool.utility.ObjectMapperFactory;
 
@@ -47,7 +47,7 @@ public class ExportFileDestinationsEndpoint {
       Map map = OBJECT_MAPPER.readValue(configFileStream, Map.class);
       exportFileDestinations = map.keySet();
       return exportFileDestinations;
-    } catch (JsonProcessingException | FileNotFoundException e) {
+    } catch (JacksonException | FileNotFoundException e) {
       throw new RuntimeException(e);
     } catch (IOException e) {
       throw new RuntimeException(e);

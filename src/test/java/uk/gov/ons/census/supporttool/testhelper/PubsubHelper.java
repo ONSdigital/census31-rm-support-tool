@@ -2,11 +2,9 @@ package uk.gov.ons.census.supporttool.testhelper;
 
 import static com.google.cloud.spring.pubsub.support.PubSubSubscriptionUtils.toProjectSubscriptionName;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.cloud.pubsub.v1.Subscriber;
 import com.google.cloud.spring.autoconfigure.pubsub.GcpPubSubProperties;
 import com.google.cloud.spring.pubsub.core.PubSubTemplate;
-import java.io.IOException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import lombok.AllArgsConstructor;
@@ -17,6 +15,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import uk.gov.ons.census.supporttool.utility.ObjectMapperFactory;
 
 @Component
@@ -49,7 +49,7 @@ public class PubsubHelper {
                         message.getPubsubMessage().getData().toByteArray(), contentClass);
                 queue.add(messageObject);
                 message.ack();
-              } catch (IOException e) {
+              } catch (JacksonException e) {
                 System.out.println("ERROR: Cannot unmarshal bad data on PubSub subscription");
               } finally {
                 // Always want to ack, to get rid of dodgy messages
@@ -79,7 +79,7 @@ public class PubsubHelper {
       // There's no concept of a 'purge' with pubsub. Crudely, we have to delete & recreate
       restTemplate.delete(subscriptionUrl);
     } catch (HttpClientErrorException exception) {
-      if (exception.getRawStatusCode() != 404) {
+      if (exception.getStatusCode().value() != 404) {
         throw exception;
       }
     }
@@ -88,7 +88,7 @@ public class PubsubHelper {
       restTemplate.put(
           subscriptionUrl, new SubscriptionTopic("projects/" + project + "/topics/" + topic));
     } catch (HttpClientErrorException exception) {
-      if (exception.getRawStatusCode() != 409) {
+      if (exception.getStatusCode().value() != 409) {
         throw exception;
       }
     }

@@ -3,9 +3,6 @@ package uk.gov.ons.census.supporttool.endpoint;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import org.junit.jupiter.api.AfterEach;
@@ -21,6 +18,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import uk.gov.ons.census.common.model.entity.UserGroupAuthorisedActivityType;
 import uk.gov.ons.census.supporttool.testhelper.IntegrationTestHelper;
 
@@ -47,7 +48,7 @@ class ExceptionManagerEndpointIT {
 
   @LocalServerPort private int port;
 
-  private static final ObjectMapper objectMapper = new ObjectMapper();
+  private static final ObjectMapper objectMapper = JsonMapper.builder().build();
 
   private WireMockServer wireMockServer;
 
@@ -65,7 +66,7 @@ class ExceptionManagerEndpointIT {
   }
 
   @Test
-  void testGetBadMessagesSummary() throws JsonProcessingException {
+  void testGetBadMessagesSummary() throws JacksonException {
     // Given
     integrationTestHelper.setUpTestUserPermission(
         UserGroupAuthorisedActivityType.EXCEPTION_MANAGER_VIEWER);
@@ -99,13 +100,13 @@ class ExceptionManagerEndpointIT {
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
     JsonNode responseJson = objectMapper.readTree(response.getBody());
-    assertThat(responseJson.get(0).get("test").textValue()).isNotEmpty();
+    assertThat(responseJson.get(0).get("test").asString()).isNotEmpty();
 
     verify(getRequestedFor(urlEqualTo(BAD_MESSAGES_SUMMARY_API_ENDPOINT)));
   }
 
   @Test
-  void testGetBadMessageDetails() throws JsonProcessingException {
+  void testGetBadMessageDetails() throws JacksonException {
     // Given
     integrationTestHelper.setUpTestUserPermission(
         UserGroupAuthorisedActivityType.EXCEPTION_MANAGER_VIEWER);
@@ -134,7 +135,7 @@ class ExceptionManagerEndpointIT {
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
     JsonNode responseJson = objectMapper.readTree(response.getBody());
-    assertThat(responseJson.get(0).get("test").textValue()).isNotEmpty();
+    assertThat(responseJson.get(0).get("test").asString()).isNotEmpty();
 
     verify(getRequestedFor(urlEqualTo(exceptionManagerApiMessageDetailUrl)));
   }
