@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 public class InvalidAddressDTO {
   private UUID caseId;
-  private String reason;
+  private InvalidAddressReason reason;
   private String notes;
 }
