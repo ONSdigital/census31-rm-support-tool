@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import "@fontsource/roboto";
-import {Button, Dialog, DialogContent, MenuItem, Select} from "@material-ui/core";
+import {Button, Dialog, DialogContent, FormControl, InputLabel, MenuItem, Select} from "@material-ui/core";
 
 class InvalidCase extends Component {
   state = {
@@ -76,7 +76,9 @@ class InvalidCase extends Component {
         </Button>
         <Dialog open={this.state.showDialog}>
           <DialogContent style={{ padding: 30 }}>
-            <div>
+              <div>
+              <FormControl required fullWidth={true}>
+              <InputLabel>Reason</InputLabel>
               <Select
                   onChange={this.onReasonChange}
                   value={this.state.reason}
@@ -92,7 +94,8 @@ class InvalidCase extends Component {
                 <MenuItem value={"UNDER_CONSTRUCTION"}>UNDER CONSTRUCTION</MenuItem>
                 <MenuItem value={"DOES_NOT_EXIST"}>DOES NOT EXIST</MenuItem>
               </Select>
-            </div>
+            </FormControl>
+      </div>
             <div style={{ marginTop: 10 }}>
               <Button
                 onClick={this.onCreate}
