@@ -12,7 +12,7 @@ import uk.gov.ons.census.common.model.entity.EventType;
 import uk.gov.ons.census.supporttool.model.dto.messaging.EventDTO;
 import uk.gov.ons.census.supporttool.model.dto.messaging.EventHeaderDTO;
 import uk.gov.ons.census.supporttool.model.dto.messaging.FulfilmentRequestDTO;
-import uk.gov.ons.census.supporttool.model.dto.messaging.InvalidCaseDTO;
+import uk.gov.ons.census.supporttool.model.dto.messaging.InvalidAddressDTO;
 import uk.gov.ons.census.supporttool.model.dto.messaging.PayloadDTO;
 import uk.gov.ons.census.supporttool.model.dto.messaging.RefusalDTO;
 import uk.gov.ons.census.supporttool.model.dto.rest.FulfilmentRequest;
@@ -74,17 +74,17 @@ public class CaseService {
 
   public void buildAndSendInvalidAddressCaseEvent(
       InvalidCase invalidCase, Case caze, String userEmail) {
-    InvalidCaseDTO invalidCaseDTO = new InvalidCaseDTO();
-    invalidCaseDTO.setCaseId(caze.getId());
-    invalidCaseDTO.setReason(invalidCase.getReason());
+    InvalidAddressDTO invalidAddressDTO = new InvalidAddressDTO();
+    invalidAddressDTO.setCaseId(caze.getId());
+    invalidAddressDTO.setReason(invalidCase.getReason());
 
     PayloadDTO payloadDTO = new PayloadDTO();
-    payloadDTO.setInvalidCase(invalidCaseDTO);
+    payloadDTO.setInvalidAddress(invalidAddressDTO);
 
     EventDTO event = new EventDTO();
 
     EventHeaderDTO eventHeader =
-        EventHelper.createEventDTO(invalidCaseEventTopic, userEmail, EventType.INVALID_CASE);
+        EventHelper.createEventDTO(invalidCaseEventTopic, userEmail, EventType.ADDRESS_NOT_VALID);
     event.setHeader(eventHeader);
     event.setPayload(payloadDTO);
 
