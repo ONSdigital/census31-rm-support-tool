@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import "@fontsource/roboto";
-import { Button, Dialog, DialogContent, TextField } from "@material-ui/core";
+import {Button, Dialog, DialogContent, MenuItem, Select} from "@material-ui/core";
 
 class InvalidCase extends Component {
   state = {
@@ -77,15 +77,21 @@ class InvalidCase extends Component {
         <Dialog open={this.state.showDialog}>
           <DialogContent style={{ padding: 30 }}>
             <div>
-              <TextField
-                required
-                fullWidth={true}
-                style={{ marginTop: 20 }}
-                label="Reason"
-                onChange={this.onReasonChange}
-                error={this.state.reasonValidationError}
-                value={this.state.reason}
-              />
+              <Select
+                  onChange={this.onReasonChange}
+                  value={this.state.reason}
+                  error={this.state.reasonValidationError}
+              >
+                <MenuItem value={"SPLIT_ADDRESS"}>SPLIT ADDRESS</MenuItem>
+                <MenuItem value={"DERELICT"}>DERELICT</MenuItem>
+                <MenuItem value={"DEMOLISHED"}>DEMOLISHED</MenuItem>
+                <MenuItem value={"CANT_FIND"}>CANT FIND</MenuItem>
+                <MenuItem value={"UNADDRESSABLE_OBJECT"}>UNADDRESSABLE OBJECT</MenuItem>
+                <MenuItem value={"NON_RESIDENTIAL"}>NON RESIDENTIAL</MenuItem>
+                <MenuItem value={"DUPLICATE"}>DUPLICATE</MenuItem>
+                <MenuItem value={"UNDER_CONSTRUCTION"}>UNDER CONSTRUCTION</MenuItem>
+                <MenuItem value={"DOES_NOT_EXIST"}>DOES NOT EXIST</MenuItem>
+              </Select>
             </div>
             <div style={{ marginTop: 10 }}>
               <Button
