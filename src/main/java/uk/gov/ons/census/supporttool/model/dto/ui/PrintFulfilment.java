@@ -1,10 +1,11 @@
 package uk.gov.ons.census.supporttool.model.dto.ui;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.Data;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import uk.gov.ons.census.supporttool.model.dto.rest.Contact;
 
 @Data
@@ -26,7 +27,7 @@ public class PrintFulfilment {
   }
 
   public static Map<String, String> toStringMap(Object obj) {
-    ObjectMapper mapper = new ObjectMapper();
+    final ObjectMapper mapper = JsonMapper.builder().build();
     Map<String, Object> raw = mapper.convertValue(obj, new TypeReference<Map<String, Object>>() {});
     return raw.entrySet().stream()
         .collect(

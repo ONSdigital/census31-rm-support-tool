@@ -4,12 +4,10 @@ import static uk.gov.ons.census.common.model.entity.UserGroupAuthorisedActivityT
 
 import com.google.api.client.json.webtoken.JsonWebToken;
 import com.google.auth.oauth2.TokenVerifier;
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,7 +45,8 @@ public class IAPUser implements AuthUser {
       Optional<UUID> surveyId, String userEmail) {
     User user = getUser(userEmail);
 
-    Set<UserGroupAuthorisedActivityType> result = new HashSet<>();
+    Set<UserGroupAuthorisedActivityType> result =
+        EnumSet.noneOf(UserGroupAuthorisedActivityType.class);
     for (UserGroupMember groupMember : user.getMemberOf()) {
       for (UserGroupPermission permission : groupMember.getGroup().getPermissions()) {
         if (permission.getAuthorisedActivity() == SUPER_USER
@@ -56,13 +55,15 @@ public class IAPUser implements AuthUser {
                     && permission.getSurvey().getId().equals(surveyId.get())))) {
           if (permission.getSurvey() == null) {
             // User is a global super user so give ALL permissions
-            return Set.of(UserGroupAuthorisedActivityType.values());
+            return EnumSet.allOf(UserGroupAuthorisedActivityType.class);
           } else {
             // User is a super user ONLY ON ONE SPECIFIC SURVEY so just give non-global permissions
-            result.addAll(
-                Arrays.stream(UserGroupAuthorisedActivityType.values())
-                    .filter(activityType -> !activityType.isGlobal())
-                    .collect(Collectors.toSet()));
+            for (UserGroupAuthorisedActivityType activityType :
+                UserGroupAuthorisedActivityType.values()) {
+              if (!activityType.isGlobal()) {
+                result.add(activityType);
+              }
+            }
           }
         } else if (permission.getSurvey() != null
             && surveyId.isPresent()
