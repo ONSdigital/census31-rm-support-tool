@@ -20,7 +20,6 @@ import InvalidCase from "./InvalidCase";
 import PrintFulfilment from "./PrintFulfilment";
 import { Link } from "react-router-dom";
 import SmsFulfilment from "./SmsFulfilment";
-import EmailFulfilment from "./EmailFulfilment";
 import JSONPretty from "react-json-pretty";
 import { errorAlert, getLocalDateTime } from "./Utils";
 
@@ -269,14 +268,6 @@ class CaseDetails extends Component {
                       "CREATE_CASE_SMS_FULFILMENT",
                     ) && (
                       <SmsFulfilment
-                        caseId={this.props.caseId}
-                        surveyId={this.props.surveyId}
-                      />
-                    )}
-                    {this.state.authorisedActivities.includes(
-                      "CREATE_CASE_EMAIL_FULFILMENT",
-                    ) && (
-                      <EmailFulfilment
                         caseId={this.props.caseId}
                         surveyId={this.props.surveyId}
                       />

@@ -11,5 +11,4 @@ public class SurveyUpdateDto {
   private Object metadata;
   private List<AllowedFulfilmentDto> allowedPrintFulfilments;
   private List<AllowedFulfilmentDto> allowedSmsFulfilments;
-  private List<AllowedFulfilmentDto> allowedEmailFulfilments;
 }

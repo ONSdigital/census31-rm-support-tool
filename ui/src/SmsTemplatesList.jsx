@@ -59,19 +59,6 @@ class SmsTemplatesList extends Component {
 
   refreshDataFromBackend = async (authorisedActivities) => {
     this.getSmsTemplates(authorisedActivities);
-    this.getNotifyServiceRefs(authorisedActivities);
-  };
-  getNotifyServiceRefs = async (authorisedActivities) => {
-    // TODO Create new activity called LIST_NOTIFY_SERVICES
-
-    if (!authorisedActivities.includes("LIST_EMAIL_TEMPLATES")) return;
-
-    const supplierResponse = await fetch("/api/notifyServiceRefs");
-    const supplierJson = await supplierResponse.json();
-
-    this.setState({
-      notifyServiceRefs: supplierJson,
-    });
   };
   getSmsTemplates = async (authorisedActivities) => {
     if (!authorisedActivities.includes("LIST_SMS_TEMPLATES")) return;

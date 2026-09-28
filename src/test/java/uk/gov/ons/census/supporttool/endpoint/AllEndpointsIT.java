@@ -15,7 +15,6 @@ import uk.gov.ons.census.common.model.entity.UserGroupAuthorisedActivityType;
 import uk.gov.ons.census.supporttool.model.dto.ui.ActionRuleDto;
 import uk.gov.ons.census.supporttool.model.dto.ui.AllowTemplateOnSurvey;
 import uk.gov.ons.census.supporttool.model.dto.ui.CollectionExerciseDto;
-import uk.gov.ons.census.supporttool.model.dto.ui.EmailTemplateDto;
 import uk.gov.ons.census.supporttool.model.dto.ui.ExportFileTemplateDto;
 import uk.gov.ons.census.supporttool.model.dto.ui.SmsTemplateDto;
 import uk.gov.ons.census.supporttool.model.dto.ui.SurveyDto;
@@ -173,26 +172,6 @@ class AllEndpointsIT {
   }
 
   @Test
-  void testActionRuleSurveyEmailTemplateEndpoints() {
-    integrationTestHelper.testGet(
-        port,
-        UserGroupAuthorisedActivityType.LIST_ALLOWED_EMAIL_TEMPLATES_ON_ACTION_RULES,
-        (bundle) ->
-            String.format("actionRuleSurveyEmailTemplates?surveyId=%s", bundle.getSurveyId()));
-
-    integrationTestHelper.testPost(
-        port,
-        UserGroupAuthorisedActivityType.ALLOW_EMAIL_TEMPLATE_ON_ACTION_RULE,
-        (bundle) -> "actionRuleSurveyEmailTemplates",
-        (bundle) -> {
-          AllowTemplateOnSurvey allowTemplateOnSurvey = new AllowTemplateOnSurvey();
-          allowTemplateOnSurvey.setSurveyId(bundle.getSurveyId());
-          allowTemplateOnSurvey.setPackCode(bundle.getEmailTemplatePackCode());
-          return allowTemplateOnSurvey;
-        });
-  }
-
-  @Test
   void testCaseEndpoints() {
     integrationTestHelper.testGet(
         port,
@@ -286,26 +265,6 @@ class AllEndpointsIT {
   }
 
   @Test
-  void testFulfilmentSurveyEmailTemplateEndpoints() {
-    integrationTestHelper.testGet(
-        port,
-        UserGroupAuthorisedActivityType.LIST_ALLOWED_EMAIL_TEMPLATES_ON_FULFILMENTS,
-        (bundle) ->
-            String.format("fulfilmentSurveyEmailTemplates?surveyId=%s", bundle.getSurveyId()));
-
-    integrationTestHelper.testPost(
-        port,
-        UserGroupAuthorisedActivityType.ALLOW_EMAIL_TEMPLATE_ON_FULFILMENT,
-        (bundle) -> "fulfilmentSurveyEmailTemplates",
-        (bundle) -> {
-          AllowTemplateOnSurvey allowTemplateOnSurvey = new AllowTemplateOnSurvey();
-          allowTemplateOnSurvey.setSurveyId(bundle.getSurveyId());
-          allowTemplateOnSurvey.setPackCode(bundle.getEmailTemplatePackCode());
-          return allowTemplateOnSurvey;
-        });
-  }
-
-  @Test
   void testExportFileDestinationsEndpoints() {
     integrationTestHelper.testGet(
         port,
@@ -357,28 +316,6 @@ class AllEndpointsIT {
           smsTemplateDto.setQuestionnaireType(1);
 
           return smsTemplateDto;
-        });
-  }
-
-  @Test
-  void testEmailTemplateEndpoints() {
-    integrationTestHelper.testGet(
-        port, UserGroupAuthorisedActivityType.LIST_EMAIL_TEMPLATES, (bundle) -> "emailTemplates");
-
-    integrationTestHelper.testPost(
-        port,
-        UserGroupAuthorisedActivityType.CREATE_EMAIL_TEMPLATE,
-        (bundle) -> "emailTemplates",
-        (bundle) -> {
-          EmailTemplateDto emailTemplateDto = new EmailTemplateDto();
-          emailTemplateDto.setTemplate(new String[] {"foo"});
-          emailTemplateDto.setNotifyTemplateId(UUID.randomUUID());
-          emailTemplateDto.setPackCode("TEST_" + UUID.randomUUID());
-          emailTemplateDto.setDescription("Test description");
-          emailTemplateDto.setMetadata(Map.of("foo", "bar"));
-          emailTemplateDto.setNotifyServiceRef("test_service");
-          emailTemplateDto.setQuestionnaireType(1);
-          return emailTemplateDto;
         });
   }
 

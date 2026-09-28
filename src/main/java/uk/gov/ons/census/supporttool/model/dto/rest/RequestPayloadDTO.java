@@ -8,6 +8,5 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonInclude(Include.NON_NULL)
 public class RequestPayloadDTO {
   private SmsFulfilment smsFulfilment;
-  private EmailFulfilment emailFulfilment;
   private FulfilmentRequest fulfilmentRequest;
 }

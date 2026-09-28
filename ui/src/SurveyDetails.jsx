@@ -5,10 +5,8 @@ import { Link } from "react-router-dom";
 import CollectionExerciseList from "./CollectionExerciseList";
 import AllowedExportFileTemplatesActionRulesList from "./AllowedExportFileTemplatesActionRulesList";
 import AllowedSMSTemplatesActionRulesList from "./AllowedSMSTemplatesActionRulesList";
-import AllowedEmailTemplatesOnActionRulesList from "./AllowedEmailTemplatesOnActionRulesList";
 import AllowedExportFileTemplatesOnFulfilmentsList from "./AllowedExportFileTemplatesOnFulfilmentsList";
 import AllowedSMSTemplatesOnFulfilmentsList from "./AllowedSMSTemplatesOnFulfilmentsList";
-import AllowedEmailTemplatesOnFulfilments from "./AllowedEmailTemplatesOnFulfilments";
 import { errorAlert } from "./Utils";
 import TableContainer from "@material-ui/core/TableContainer";
 import Table from "@material-ui/core/Table";
@@ -113,14 +111,10 @@ class SurveyDetails extends Component {
           surveyId={this.props.surveyId}
         />
         <AllowedSMSTemplatesActionRulesList surveyId={this.props.surveyId} />
-        <AllowedEmailTemplatesOnActionRulesList
-          surveyId={this.props.surveyId}
-        />
         <AllowedExportFileTemplatesOnFulfilmentsList
           surveyId={this.props.surveyId}
         />
         <AllowedSMSTemplatesOnFulfilmentsList surveyId={this.props.surveyId} />
-        <AllowedEmailTemplatesOnFulfilments surveyId={this.props.surveyId} />
       </div>
     );
   }
