@@ -1,3 +1,4 @@
 {
+  "_comment": "Temporary allowlist for transitive react-router advisories; remove after the React Router v7 remediation in Dependabot PR #35 is compatibility-tested and merged.",
   "allowlist": ["GHSA-wrjc-x8rr-h8h6", "GHSA-337j-9hxr-rhxg"]
 }
