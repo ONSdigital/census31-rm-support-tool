@@ -288,7 +288,6 @@ public class IntegrationTestHelper {
     actionRule.setType(ActionRuleType.SMS);
     actionRule.setTriggerDateTime(OffsetDateTime.now());
     actionRule.setCreatedBy("TEST_USER");
-    actionRule.setEmailColumn("emailAddress");
     actionRule.setActionRuleStatus(ActionRuleStatus.SCHEDULED);
 
     actionRuleRepository.saveAndFlush(actionRule);

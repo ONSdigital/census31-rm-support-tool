@@ -45,6 +45,7 @@ class SmsTemplatesList extends Component {
     questionnaireType: "",
     questionnaireTypeValidationError: false,
     questionnaireTypeValidationMessage: "",
+    notifyServiceRefValidationError: false,
   };
 
   componentDidMount() {
@@ -59,6 +60,27 @@ class SmsTemplatesList extends Component {
 
   refreshDataFromBackend = async (authorisedActivities) => {
     this.getSmsTemplates(authorisedActivities);
+    this.getNotifyServiceRefs(authorisedActivities);
+  };
+
+  getNotifyServiceRefs = async (authorisedActivities) => {
+    if (!authorisedActivities.includes("CREATE_SMS_TEMPLATE")) return;
+
+    const supplierResponse = await fetch("/api/notifyServiceRefs");
+    if (!supplierResponse.ok) {
+      const responseJson = await supplierResponse.json();
+      errorAlert(responseJson);
+      return;
+    }
+
+    const supplierJson = await supplierResponse.json();
+    const notifyServiceRefs = Array.isArray(supplierJson)
+      ? [...supplierJson].sort()
+      : [];
+
+    this.setState({
+      notifyServiceRefs: notifyServiceRefs,
+    });
   };
   getSmsTemplates = async (authorisedActivities) => {
     if (!authorisedActivities.includes("LIST_SMS_TEMPLATES")) return;
@@ -79,7 +101,10 @@ class SmsTemplatesList extends Component {
       template: "",
       newTemplateMetadata: "",
       notifyTemplateId: "",
-      notifyServiceRef: "",
+      notifyServiceRef:
+        this.state.notifyServiceRefs.length === 1
+          ? this.state.notifyServiceRefs[0]
+          : "",
       packCodeValidationError: false,
       descriptionValidationError: false,
       templateValidationError: false,
