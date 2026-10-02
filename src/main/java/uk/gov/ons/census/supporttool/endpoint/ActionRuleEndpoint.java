@@ -29,7 +29,6 @@ import uk.gov.ons.census.common.model.entity.ActionRule;
 import uk.gov.ons.census.common.model.entity.ActionRuleStatus;
 import uk.gov.ons.census.common.model.entity.ActionRuleType;
 import uk.gov.ons.census.common.model.entity.CollectionExercise;
-import uk.gov.ons.census.common.model.entity.EmailTemplate;
 import uk.gov.ons.census.common.model.entity.ExportFileTemplate;
 import uk.gov.ons.census.common.model.entity.SmsTemplate;
 import uk.gov.ons.census.common.model.entity.UserGroupAuthorisedActivityType;
@@ -130,7 +129,6 @@ public class ActionRuleEndpoint {
 
     ExportFileTemplate exportFileTemplate = null;
     SmsTemplate smsTemplate = null;
-    EmailTemplate emailTemplate = null;
     switch (actionRuleDTO.getType()) {
       case EXPORT_FILE:
         userActivity = CREATE_EXPORT_FILE_ACTION_RULE;
@@ -178,7 +176,6 @@ public class ActionRuleEndpoint {
     actionRule.setTriggerDateTime(actionRuleDTO.getTriggerDateTime());
     actionRule.setCreatedBy(createdBy);
     actionRule.setSmsTemplate(smsTemplate);
-    actionRule.setEmailTemplate(emailTemplate);
     actionRule.setUacMetadata(actionRuleDTO.getUacMetadata());
     actionRule.setActionRuleStatus(ActionRuleStatus.SCHEDULED);
 

@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import SurveysList from "./SurveysList";
 import ExportFileTemplateList from "./ExportFileTemplatesList";
 import SmsTemplatesList from "./SmsTemplatesList";
-import EmailTemplateList from "./EmailTemplateList";
 import ConfigureFulfilmentTrigger from "./ConfigureFulfilmentTrigger";
 
 import { errorAlert, getAuthorisedActivities } from "./Utils";
@@ -44,7 +43,6 @@ class LandingPage extends Component {
         <SurveysList />
         <ExportFileTemplateList />
         <SmsTemplatesList />
-        <EmailTemplateList />
         <ConfigureFulfilmentTrigger />
 
         {this.state.authorisedActivities.includes("SUPER_USER") && (

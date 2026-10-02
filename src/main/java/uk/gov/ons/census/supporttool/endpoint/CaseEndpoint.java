@@ -2,7 +2,6 @@ package uk.gov.ons.census.supporttool.endpoint;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,19 +14,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.ons.census.common.model.entity.Case;
 import uk.gov.ons.census.common.model.entity.Event;
 import uk.gov.ons.census.common.model.entity.UacQidLink;
 import uk.gov.ons.census.common.model.entity.UserGroupAuthorisedActivityType;
-import uk.gov.ons.census.supporttool.client.NotifyServiceClient;
-import uk.gov.ons.census.supporttool.model.dto.rest.EmailFulfilment;
 import uk.gov.ons.census.supporttool.model.dto.rest.FulfilmentRequest;
 import uk.gov.ons.census.supporttool.model.dto.rest.RequestDTO;
 import uk.gov.ons.census.supporttool.model.dto.rest.RequestHeaderDTO;
 import uk.gov.ons.census.supporttool.model.dto.rest.RequestPayloadDTO;
 import uk.gov.ons.census.supporttool.model.dto.ui.CaseDto;
-import uk.gov.ons.census.supporttool.model.dto.ui.EmailFulfilmentAction;
 import uk.gov.ons.census.supporttool.model.dto.ui.EventDto;
 import uk.gov.ons.census.supporttool.model.dto.ui.InvalidCase;
 import uk.gov.ons.census.supporttool.model.dto.ui.PrintFulfilment;
@@ -42,13 +37,10 @@ import uk.gov.ons.census.supporttool.service.CaseService;
 public class CaseEndpoint {
 
   private static final Logger log = LoggerFactory.getLogger(CaseEndpoint.class);
-  private final NotifyServiceClient notifyServiceClient;
   private final CaseService caseService;
   private final AuthUser authUser;
 
-  public CaseEndpoint(
-      NotifyServiceClient notifyServiceClient, AuthUser authUser, CaseService caseService) {
-    this.notifyServiceClient = notifyServiceClient;
+  public CaseEndpoint(AuthUser authUser, CaseService caseService) {
     this.authUser = authUser;
     this.caseService = caseService;
   }
@@ -235,59 +227,5 @@ public class CaseEndpoint {
     caseService.buildAndSendFulfilmentCaseEvent(fulfilmentRequest, caze, userEmail);
 
     return new ResponseEntity<>(HttpStatus.OK);
-  }
-
-  @PostMapping(value = "/{caseId}/action/email-fulfilment")
-  public ResponseEntity<?> handleEmailFulfilment(
-      @PathVariable("caseId") UUID caseId,
-      @RequestBody EmailFulfilmentAction emailFulfilmentAction,
-      @Value("#{request.getAttribute('userEmail')}") String userEmail) {
-
-    Case caze = caseService.getCaseByCaseId(caseId);
-
-    // Check user is authorised to request a fulfilment on a case for this survey
-    authUser.checkUserPermission(
-        userEmail,
-        caze.getCollectionExercise().getSurvey().getId(),
-        UserGroupAuthorisedActivityType.CREATE_CASE_EMAIL_FULFILMENT);
-
-    RequestDTO emailFulfilmentRequest = new RequestDTO();
-    RequestHeaderDTO header = new RequestHeaderDTO();
-    header.setSource("SUPPORT_TOOL");
-    header.setChannel("RM");
-    header.setCorrelationId(UUID.randomUUID());
-    header.setOriginatingUser(userEmail);
-
-    RequestPayloadDTO payload = new RequestPayloadDTO();
-    EmailFulfilment emailFulfilment = new EmailFulfilment();
-    emailFulfilment.setCaseId(caze.getId());
-    emailFulfilment.setPackCode(emailFulfilmentAction.getPackCode());
-    emailFulfilment.setEmail(emailFulfilmentAction.getEmail());
-    emailFulfilment.setUacMetadata(emailFulfilmentAction.getUacMetadata());
-    emailFulfilment.setPersonalisation(emailFulfilmentAction.getPersonalisation());
-
-    emailFulfilmentRequest.setHeader(header);
-    payload.setEmailFulfilment(emailFulfilment);
-    emailFulfilmentRequest.setPayload(payload);
-
-    Optional<String> errorOpt = requestEmailFulfilment(emailFulfilmentRequest);
-    if (errorOpt.isPresent()) {
-      log.atWarn()
-          .setMessage("There are validation errors in the provided data")
-          .addKeyValue("httpStatus", HttpStatus.BAD_REQUEST)
-          .addKeyValue("userEmail", userEmail)
-          .log();
-      return new ResponseEntity<>(errorOpt.get(), HttpStatus.BAD_REQUEST);
-    }
-    return new ResponseEntity<>(HttpStatus.OK);
-  }
-
-  private Optional<String> requestEmailFulfilment(RequestDTO emailFulfilmentRequest) {
-    try {
-      notifyServiceClient.requestEmailFulfilment(emailFulfilmentRequest);
-    } catch (HttpClientErrorException e) {
-      return Optional.of(e.getResponseBodyAsString());
-    }
-    return Optional.empty();
   }
 }

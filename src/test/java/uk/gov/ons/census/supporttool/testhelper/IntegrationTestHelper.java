@@ -21,7 +21,6 @@ import uk.gov.ons.census.common.model.entity.ActionRuleStatus;
 import uk.gov.ons.census.common.model.entity.ActionRuleType;
 import uk.gov.ons.census.common.model.entity.Case;
 import uk.gov.ons.census.common.model.entity.CollectionExercise;
-import uk.gov.ons.census.common.model.entity.EmailTemplate;
 import uk.gov.ons.census.common.model.entity.ExportFileTemplate;
 import uk.gov.ons.census.common.model.entity.SmsTemplate;
 import uk.gov.ons.census.common.model.entity.Survey;
@@ -35,7 +34,6 @@ import uk.gov.ons.census.common.model.entity.UserGroupPermission;
 import uk.gov.ons.census.supporttool.model.repository.ActionRuleRepository;
 import uk.gov.ons.census.supporttool.model.repository.CaseRepository;
 import uk.gov.ons.census.supporttool.model.repository.CollectionExerciseRepository;
-import uk.gov.ons.census.supporttool.model.repository.EmailTemplateRepository;
 import uk.gov.ons.census.supporttool.model.repository.ExportFileTemplateRepository;
 import uk.gov.ons.census.supporttool.model.repository.SmsTemplateRepository;
 import uk.gov.ons.census.supporttool.model.repository.SurveyRepository;
@@ -58,7 +56,6 @@ public class IntegrationTestHelper {
 
   private final ExportFileTemplateRepository exportFileTemplateRepository;
   private final SmsTemplateRepository smsTemplateRepository;
-  private final EmailTemplateRepository emailTemplateRepository;
   private final CaseRepository caseRepository;
   private final UacQidLinkRepository uacQidLinkRepository;
 
@@ -78,7 +75,6 @@ public class IntegrationTestHelper {
       ActionRuleRepository actionRuleRepository,
       ExportFileTemplateRepository exportFileTemplateRepository,
       SmsTemplateRepository smsTemplateRepository,
-      EmailTemplateRepository emailTemplateRepository,
       CaseRepository caseRepository,
       UacQidLinkRepository uacQidLinkRepository,
       UserRepository userRepository,
@@ -91,7 +87,6 @@ public class IntegrationTestHelper {
     this.actionRuleRepository = actionRuleRepository;
     this.exportFileTemplateRepository = exportFileTemplateRepository;
     this.smsTemplateRepository = smsTemplateRepository;
-    this.emailTemplateRepository = emailTemplateRepository;
     this.caseRepository = caseRepository;
     this.uacQidLinkRepository = uacQidLinkRepository;
     this.userRepository = userRepository;
@@ -280,15 +275,6 @@ public class IntegrationTestHelper {
     smsTemplate.setQuestionnaireType(1);
     smsTemplate = smsTemplateRepository.saveAndFlush(smsTemplate);
 
-    EmailTemplate emailTemplate = new EmailTemplate();
-    emailTemplate.setPackCode("TEST_EMAIL_PACK_CODE_" + UUID.randomUUID());
-    emailTemplate.setTemplate(new String[] {"UPRN", "ADDRESS_LINE1"});
-    emailTemplate.setNotifyTemplateId(UUID.randomUUID());
-    emailTemplate.setDescription("Test description");
-    emailTemplate.setNotifyServiceRef("test_service");
-    emailTemplate.setQuestionnaireType(1);
-    emailTemplate = emailTemplateRepository.saveAndFlush(emailTemplate);
-
     User user = setupDummyUser(UUID.randomUUID());
     UserGroup group = setupDummyGroup(UUID.randomUUID());
     UserGroup secondGroup = setupDummyGroup(UUID.randomUUID());
@@ -299,11 +285,9 @@ public class IntegrationTestHelper {
     ActionRule actionRule = new ActionRule();
     actionRule.setId(UUID.randomUUID());
     actionRule.setCollectionExercise(collectionExercise);
-    actionRule.setType(ActionRuleType.EMAIL);
+    actionRule.setType(ActionRuleType.SMS);
     actionRule.setTriggerDateTime(OffsetDateTime.now());
     actionRule.setCreatedBy("TEST_USER");
-    actionRule.setEmailTemplate(emailTemplate);
-    actionRule.setEmailColumn("emailAddress");
     actionRule.setActionRuleStatus(ActionRuleStatus.SCHEDULED);
 
     actionRuleRepository.saveAndFlush(actionRule);
@@ -317,7 +301,6 @@ public class IntegrationTestHelper {
     bundle.setQid(uacQidLink.getQid());
     bundle.setExportFileTemplatePackCode(exportFileTemplate.getPackCode());
     bundle.setSmsTemplatePackCode(smsTemplate.getPackCode());
-    bundle.setEmailTemplatePackCode(emailTemplate.getPackCode());
     bundle.setUserId(user.getId());
     bundle.setGroupId(group.getId());
     bundle.setGroupMemberId(userGroupMember.getId());
@@ -478,14 +461,6 @@ public class IntegrationTestHelper {
     smsTemplate.setNotifyServiceRef("test_service");
     smsTemplate = smsTemplateRepository.saveAndFlush(smsTemplate);
 
-    EmailTemplate emailTemplate = new EmailTemplate();
-    emailTemplate.setPackCode("TEST_EMAIL_PACK_CODE_" + UUID.randomUUID());
-    emailTemplate.setTemplate(new String[] {"UPRN", "ADDRESS_LINE1"});
-    emailTemplate.setNotifyTemplateId(UUID.randomUUID());
-    emailTemplate.setDescription("Test description");
-    emailTemplate.setNotifyServiceRef("test_service");
-    emailTemplate = emailTemplateRepository.saveAndFlush(emailTemplate);
-
     User user = setupDummyUser(UUID.randomUUID());
     UserGroup group = setupDummyGroup(UUID.randomUUID());
     UserGroup secondGroup = setupDummyGroup(UUID.randomUUID());
@@ -498,7 +473,6 @@ public class IntegrationTestHelper {
     bundle.setQid(uacQidLink.getQid());
     bundle.setExportFileTemplatePackCode(exportFileTemplate.getPackCode());
     bundle.setSmsTemplatePackCode(smsTemplate.getPackCode());
-    bundle.setEmailTemplatePackCode(emailTemplate.getPackCode());
     bundle.setUserId(user.getId());
     bundle.setGroupId(group.getId());
     bundle.setGroupMemberId(userGroupMember.getId());

@@ -31,7 +31,6 @@ class AllowedExportFileTemplatesOnFulfilmentsList extends Component {
     allowFulfilmentExportFileTemplateDialogDisplayed: false,
     exportFileTemplateToAllow: "",
     exportFileTemplateValidationError: false,
-    allowEmailFulfilmentTemplateDialogDisplayed: true,
     allowExportFileTemplateError: "",
   };
 
