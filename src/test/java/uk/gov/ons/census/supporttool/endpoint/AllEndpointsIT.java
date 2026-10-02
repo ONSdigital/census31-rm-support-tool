@@ -322,7 +322,7 @@ class AllEndpointsIT {
   @Test
   void testNotifyServiceRefEndpoints() {
     integrationTestHelper.testGet(
-        port, UserGroupAuthorisedActivityType.CREATE_SMS_TEMPLATE, (bundle) -> "notifyServiceRefs");
+        port, UserGroupAuthorisedActivityType.LIST_SMS_TEMPLATES, (bundle) -> "notifyServiceRefs");
   }
 
   @Test

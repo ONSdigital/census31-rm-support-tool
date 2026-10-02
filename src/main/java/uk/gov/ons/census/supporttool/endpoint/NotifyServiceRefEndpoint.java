@@ -1,6 +1,6 @@
 package uk.gov.ons.census.supporttool.endpoint;
 
-import static uk.gov.ons.census.common.model.entity.UserGroupAuthorisedActivityType.CREATE_SMS_TEMPLATE;
+import static uk.gov.ons.census.common.model.entity.UserGroupAuthorisedActivityType.LIST_SMS_TEMPLATES;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -36,7 +36,7 @@ public class NotifyServiceRefEndpoint {
   @GetMapping
   public Set<String> getNotifyServiceRefs(
       @Value("#{request.getAttribute('userEmail')}") String userEmail) {
-    authUser.checkGlobalUserPermission(userEmail, CREATE_SMS_TEMPLATE);
+    authUser.checkGlobalUserPermission(userEmail, LIST_SMS_TEMPLATES);
 
     if (notifyServiceRefs != null) {
       return notifyServiceRefs;
