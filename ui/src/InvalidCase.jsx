@@ -1,6 +1,14 @@
 import React, { Component } from "react";
 import "@fontsource/roboto";
-import {Button, Dialog, DialogContent, FormControl, InputLabel, MenuItem, Select} from "@material-ui/core";
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+} from "@material-ui/core";
 
 class InvalidCase extends Component {
   state = {
@@ -76,26 +84,30 @@ class InvalidCase extends Component {
         </Button>
         <Dialog open={this.state.showDialog}>
           <DialogContent style={{ padding: 30 }}>
-              <div>
+            <div>
               <FormControl required fullWidth={true}>
-              <InputLabel>Reason</InputLabel>
-              <Select
+                <InputLabel>Reason</InputLabel>
+                <Select
                   onChange={this.onReasonChange}
                   value={this.state.reason}
                   error={this.state.reasonValidationError}
-              >
-                <MenuItem value={"SPLIT_ADDRESS"}>SPLIT ADDRESS</MenuItem>
-                <MenuItem value={"DERELICT"}>DERELICT</MenuItem>
-                <MenuItem value={"DEMOLISHED"}>DEMOLISHED</MenuItem>
-                <MenuItem value={"CANT_FIND"}>CANT FIND</MenuItem>
-                <MenuItem value={"UNADDRESSABLE_OBJECT"}>UNADDRESSABLE OBJECT</MenuItem>
-                <MenuItem value={"NON_RESIDENTIAL"}>NON RESIDENTIAL</MenuItem>
-                <MenuItem value={"DUPLICATE"}>DUPLICATE</MenuItem>
-                <MenuItem value={"UNDER_CONSTRUCTION"}>UNDER CONSTRUCTION</MenuItem>
-                <MenuItem value={"DOES_NOT_EXIST"}>DOES NOT EXIST</MenuItem>
-              </Select>
-            </FormControl>
-      </div>
+                >
+                  <MenuItem value={"SPLIT_ADDRESS"}>SPLIT ADDRESS</MenuItem>
+                  <MenuItem value={"DERELICT"}>DERELICT</MenuItem>
+                  <MenuItem value={"DEMOLISHED"}>DEMOLISHED</MenuItem>
+                  <MenuItem value={"CANT_FIND"}>CANT FIND</MenuItem>
+                  <MenuItem value={"UNADDRESSABLE_OBJECT"}>
+                    UNADDRESSABLE OBJECT
+                  </MenuItem>
+                  <MenuItem value={"NON_RESIDENTIAL"}>NON RESIDENTIAL</MenuItem>
+                  <MenuItem value={"DUPLICATE"}>DUPLICATE</MenuItem>
+                  <MenuItem value={"UNDER_CONSTRUCTION"}>
+                    UNDER CONSTRUCTION
+                  </MenuItem>
+                  <MenuItem value={"DOES_NOT_EXIST"}>DOES NOT EXIST</MenuItem>
+                </Select>
+              </FormControl>
+            </div>
             <div style={{ marginTop: 10 }}>
               <Button
                 onClick={this.onCreate}
