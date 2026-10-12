@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableRow from "@material-ui/core/TableRow";
-import TableContainer from "@material-ui/core/TableContainer";
-import TableHead from "@material-ui/core/TableHead";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableRow from "@mui/material/TableRow";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
 import {
   Button,
   Dialog,
@@ -17,7 +17,7 @@ import {
   Select,
   MenuItem,
   Typography,
-} from "@material-ui/core";
+} from "@mui/material";
 import { errorAlert, getAuthorisedActivities } from "./Utils";
 
 class SurveysList extends Component {
@@ -40,12 +40,13 @@ class SurveysList extends Component {
   }
 
   getBackEndData = async () => {
-    const authorisedActivities = await getAuthorisedActivities();
+    const authorisedActivities = (await getAuthorisedActivities()) || [];
     this.setState({ authorisedActivities: authorisedActivities });
-    this.refreshDataFromBackend(this.state.authorisedActivities);
+    this.refreshDataFromBackend(authorisedActivities);
   };
 
   refreshDataFromBackend = async (authorisedActivities) => {
+    if (!Array.isArray(authorisedActivities)) return;
     if (!authorisedActivities.includes("LIST_SURVEYS")) return;
 
     const response = await fetch("/api/surveys");

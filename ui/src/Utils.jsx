@@ -105,10 +105,10 @@ export const getAuthorisedActivities = async () => {
   const responseJson = await authResponse.json();
   if (!authResponse.ok) {
     errorAlert(responseJson);
-    return;
+    return [];
   }
 
-  return responseJson;
+  return Array.isArray(responseJson) ? responseJson : [];
 };
 
 export function errorAlert(errorJson) {

@@ -8,7 +8,7 @@ import {
   InputLabel,
   MenuItem,
   Select,
-} from "@material-ui/core";
+} from "@mui/material";
 
 class InvalidCase extends Component {
   state = {
