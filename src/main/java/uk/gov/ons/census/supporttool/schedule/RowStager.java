@@ -99,7 +99,7 @@ public class RowStager {
       // Stage all the rows
       JobStatus jobStatus = JobStatus.VALIDATION_IN_PROGRESS;
       while (job.getStagingRowNumber() < job.getFileRowCount() - headerRowCorrection) {
-        jobStatus = rowChunkStager.stageChunk(job, headerRow, csvReader);
+        jobStatus = rowChunkStager.stageChunk(job, headerRow, csvReader, headerRowCorrection);
         if (jobStatus == JobStatus.VALIDATED_TOTAL_FAILURE) {
           break;
         }

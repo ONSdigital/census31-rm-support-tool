@@ -20,6 +20,8 @@ import uk.gov.ons.census.supporttool.model.repository.JobRowRepository;
 public class RowChunkStager {
   private static final Logger log = LoggerFactory.getLogger(RowChunkStager.class);
   private final int CHUNK_SIZE = 500;
+  private static final int HEADER_ROW_OFFSET = 1; // Delimited files are 1-indexed and include header row
+      // This is ONLY applied for samples WITH headers; headerless samples offset 0
   private final JobRepository jobRepository;
   private final JobRowRepository jobRowRepository;
 
@@ -29,7 +31,7 @@ public class RowChunkStager {
   }
 
   @Transactional(propagation = Propagation.REQUIRES_NEW)
-  public JobStatus stageChunk(Job job, String[] headerRow, CSVReader csvReader)
+  public JobStatus stageChunk(Job job, String[] headerRow, CSVReader csvReader, int headerRowOffset)
       throws CsvValidationException {
     JobStatus jobStatus = JobStatus.VALIDATION_IN_PROGRESS;
 
@@ -76,7 +78,7 @@ public class RowChunkStager {
         jobRow.setOriginalRowData(line);
 
         job.setStagingRowNumber(job.getStagingRowNumber() + 1);
-        jobRow.setOriginalRowLineNumber(job.getStagingRowNumber());
+        jobRow.setOriginalRowLineNumber(job.getStagingRowNumber() + headerRowOffset);
         jobRows.add(jobRow);
       }
 
