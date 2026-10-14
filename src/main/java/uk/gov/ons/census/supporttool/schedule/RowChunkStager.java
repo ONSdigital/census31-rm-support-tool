@@ -20,8 +20,9 @@ import uk.gov.ons.census.supporttool.model.repository.JobRowRepository;
 public class RowChunkStager {
   private static final Logger log = LoggerFactory.getLogger(RowChunkStager.class);
   private final int CHUNK_SIZE = 500;
-  private static final int HEADER_ROW_OFFSET = 1; // Delimited files are 1-indexed and include header row
-      // This is ONLY applied for samples WITH headers; headerless samples offset 0
+  private static final int HEADER_ROW_OFFSET =
+      1; // Delimited files are 1-indexed and include header row
+  // This is ONLY applied for samples WITH headers; headerless samples offset 0
   private final JobRepository jobRepository;
   private final JobRowRepository jobRowRepository;
 
