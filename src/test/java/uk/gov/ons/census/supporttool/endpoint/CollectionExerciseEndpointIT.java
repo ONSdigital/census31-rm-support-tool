@@ -28,7 +28,7 @@ import uk.gov.ons.census.supporttool.testhelper.QueueSpy;
 @ActiveProfiles("test")
 public class CollectionExerciseEndpointIT {
   private static final String COLLECTION_EXERCISE_UPDATE_TEST_SUBSCRIPTION =
-      "event_collection-exercise-update_rh";
+      "event_collection-exercise-update_it";
 
   private static final Map<String, String> TEST_COLLECTION_EXERCISE_UPDATE_METADATA =
       Map.of("TEST_COLLECTION_EXERCISE_UPDATE_METADATA", "TEST");

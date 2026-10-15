@@ -25,4 +25,4 @@ curl -X PUT http://"$PUBSUB_SETUP_HOST"/v1/projects/our-project/topics/event_sur
 curl -X PUT http://"$PUBSUB_SETUP_HOST"/v1/projects/our-project/subscriptions/event_survey-update_it -H 'Content-Type: application/json' -d '{"topic": "projects/our-project/topics/event_survey-update"}'
 
 curl -X PUT http://"$PUBSUB_SETUP_HOST"/v1/projects/our-project/topics/event_collection-exercise-update
-curl -X PUT http://"$PUBSUB_SETUP_HOST"/v1/projects/our-project/subscriptions/event_collection-exercise-update_rh -H 'Content-Type: application/json' -d '{"topic": "projects/our-project/topics/event_collection-exercise-update"}'
+curl -X PUT http://"$PUBSUB_SETUP_HOST"/v1/projects/our-project/subscriptions/event_collection-exercise-update_it -H 'Content-Type: application/json' -d '{"topic": "projects/our-project/topics/event_collection-exercise-update"}'
