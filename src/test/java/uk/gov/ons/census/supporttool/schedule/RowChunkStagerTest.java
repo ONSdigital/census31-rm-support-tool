@@ -42,7 +42,7 @@ public class RowChunkStagerTest {
 
     when(csvReader.readNext()).thenReturn(null);
 
-    JobStatus jobStatus = underTest.stageChunk(job, headerRow, csvReader);
+    JobStatus jobStatus = underTest.stageChunk(job, headerRow, csvReader, 1);
 
     assertThat(jobStatus).isEqualTo(JobStatus.VALIDATED_TOTAL_FAILURE);
     verify(csvReader).readNext();
@@ -61,7 +61,7 @@ public class RowChunkStagerTest {
 
     when(csvReader.readNext()).thenReturn(new String[] {"1", "2", "3"}).thenReturn(null);
 
-    JobStatus jobStatus = underTest.stageChunk(job, headerRow, csvReader);
+    JobStatus jobStatus = underTest.stageChunk(job, headerRow, csvReader, 1);
 
     assertThat(jobStatus).isEqualTo(JobStatus.VALIDATION_IN_PROGRESS);
     verify(csvReader, times(2)).readNext();
@@ -75,6 +75,9 @@ public class RowChunkStagerTest {
 
     assertThat(jobRow.get(0).getJob()).isEqualTo(capturedJob);
     assertThat(jobRow.get(0).getRowData()).isEqualTo(Map.of("a", "1", "b", "2", "c", "3"));
+    // Verify the fix: file line number should account for header row
+    assertThat(jobRow.get(0).getOriginalRowLineNumber())
+        .isEqualTo(2); // 1 (stagingRowNumber) + 1 (header offset)
   }
 
   @Test
@@ -85,10 +88,67 @@ public class RowChunkStagerTest {
 
     when(csvReader.readNext()).thenThrow(new IOException());
 
-    JobStatus jobStatus = underTest.stageChunk(job, headerRow, csvReader);
+    JobStatus jobStatus = underTest.stageChunk(job, headerRow, csvReader, 1);
 
     assertThat(jobStatus).isEqualTo(JobStatus.VALIDATED_TOTAL_FAILURE);
     verify(csvReader).readNext();
+  }
+
+  @Test
+  void testRowChunkStagerMultipleRowsWithCorrectLineNumbers()
+      throws IOException, CsvValidationException {
+    Job job = getJob();
+    job.setStagingRowNumber(0);
+
+    String[] headerRow = {"a", "b", "c"};
+
+    when(csvReader.readNext())
+        .thenReturn(new String[] {"1", "2", "3"}) // First data row (stagingRowNumber becomes 1)
+        .thenReturn(new String[] {"4", "5", "6"}) // Second data row (stagingRowNumber becomes 2)
+        .thenReturn(new String[] {"7", "8", "9"}) // Third data row (stagingRowNumber becomes 3)
+        .thenReturn(null);
+
+    JobStatus jobStatus = underTest.stageChunk(job, headerRow, csvReader, 1);
+
+    assertThat(jobStatus).isEqualTo(JobStatus.VALIDATION_IN_PROGRESS);
+
+    verify(jobRowRepository).saveAll(jobRowCaptor.capture());
+    List<JobRow> jobRows = jobRowCaptor.getValue();
+
+    // Verify line numbers account for header row
+    // File structure: Line 1 = Header, Line 2 = First data row, Line 3 = Second data row, etc.
+    assertThat(jobRows.get(0).getOriginalRowLineNumber()).isEqualTo(2); // First data row at line 2
+    assertThat(jobRows.get(1).getOriginalRowLineNumber()).isEqualTo(3); // Second data row at line 3
+    assertThat(jobRows.get(2).getOriginalRowLineNumber()).isEqualTo(4); // Third data row at line 4
+  }
+
+  @Test
+  void testRowChunkStagerHeaderlessFileWithCorrectLineNumbers()
+      throws IOException, CsvValidationException {
+    Job job = getJob();
+    job.setStagingRowNumber(0);
+
+    String[] headerRow = {"a", "b", "c"}; // Expected columns (not from file)
+
+    when(csvReader.readNext())
+        .thenReturn(new String[] {"1", "2", "3"}) // First data row (stagingRowNumber becomes 1)
+        .thenReturn(new String[] {"4", "5", "6"}) // Second data row (stagingRowNumber becomes 2)
+        .thenReturn(new String[] {"7", "8", "9"}) // Third data row (stagingRowNumber becomes 3)
+        .thenReturn(null);
+
+    // For headerless files, headerRowOffset = 0 (no header to account for)
+    JobStatus jobStatus = underTest.stageChunk(job, headerRow, csvReader, 0);
+
+    assertThat(jobStatus).isEqualTo(JobStatus.VALIDATION_IN_PROGRESS);
+
+    verify(jobRowRepository).saveAll(jobRowCaptor.capture());
+    List<JobRow> jobRows = jobRowCaptor.getValue();
+
+    // Verify line numbers for headerless file (no offset applied)
+    // File structure: Line 1 = First data row, Line 2 = Second data row, etc.
+    assertThat(jobRows.get(0).getOriginalRowLineNumber()).isEqualTo(1); // First data row at line 1
+    assertThat(jobRows.get(1).getOriginalRowLineNumber()).isEqualTo(2); // Second data row at line 2
+    assertThat(jobRows.get(2).getOriginalRowLineNumber()).isEqualTo(3); // Third data row at line 3
   }
 
   private Job getJob() {

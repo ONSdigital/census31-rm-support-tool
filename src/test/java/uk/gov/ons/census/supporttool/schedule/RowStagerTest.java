@@ -58,7 +58,7 @@ public class RowStagerTest {
               return JobStatus.VALIDATION_IN_PROGRESS;
             })
         .when(rowChunkStager)
-        .stageChunk(eq(job), any(), any());
+        .stageChunk(eq(job), any(), any(), anyInt());
 
     // When
     underTest.processRows();
@@ -78,7 +78,7 @@ public class RowStagerTest {
     jobList.add(job);
     ScheduleHelper.createFile(job, "Junk");
     when(jobRepository.findByJobStatus(JobStatus.STAGING_IN_PROGRESS)).thenReturn(jobList);
-    when(rowChunkStager.stageChunk(eq(job), any(), any()))
+    when(rowChunkStager.stageChunk(eq(job), any(), any(), anyInt()))
         .thenReturn(JobStatus.VALIDATED_TOTAL_FAILURE);
 
     // When
